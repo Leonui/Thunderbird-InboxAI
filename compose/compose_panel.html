@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>InboxAI Assistant</title>
+  <style>
+    body {
+      width: 300px;
+      font-family: sans-serif;
+      padding: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      margin-bottom: 5px;
+      padding: 8px;
+    }
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .loading {
+      color: #666;
+      font-size: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h3>InboxAI Assistant</h3>
+  
+  <div>
+    <label for="prompt"><strong>Write New:</strong></label>
+    <textarea id="prompt" placeholder="Describe the email you want to write..."></textarea>
+    <button id="btn-write">Write Draft</button>
+  </div>
+
+  <hr>
+
+  <div>
+    <label><strong>Current Draft:</strong></label>
+    <button id="btn-polish">Polish Draft</button>
+  </div>
+
+  <div id="status" class="loading">Processing...</div>
+  <div id="error" class="error"></div>
+  
+  <div id="result-container" style="display:none; margin-top: 10px;">
+    <label><strong>Result:</strong></label>
+    <textarea id="result-text" readonly style="height: 100px;"></textarea>
+    <button id="btn-copy">Copy to Clipboard</button>
+  </div>
+
+  <script src="../lib/ai_service.js"></script>
+  <script src="compose_panel.js"></script>
+</body>
+</html>

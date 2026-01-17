@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "InboxAI",
+  "description": "InboxAI helps you translate, polish, and write emails.",
+  "version": "1.0.0",
+  "author": "Antigravity",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ai-assistant@antigravity.dev",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": [
+    "storage",
+    "accountsRead",
+    "messagesRead",
+    "messagesModify",
+    "compose",
+    "menus",
+    "activeTab"
+  ],
+  "background": {
+    "scripts": ["background/background.js"]
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "compose_action": {
+    "default_icon": "icons/icon-32.png",
+    "default_title": "AI Assistant",
+    "default_popup": "compose/compose_panel.html"
+  },
+  "message_display_action": {
+    "default_icon": "icons/icon-32.png",
+    "default_title": "Translate Email",
+    "default_popup": "message/message_logic.html"
+  }
+}
