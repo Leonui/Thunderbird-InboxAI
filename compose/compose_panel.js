@@ -53,7 +53,13 @@ btnWrite.addEventListener('click', async () => {
 
   setLoading(true);
   try {
-    const generatedText = await aiService.write(prompt);
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    let context = '';
+    if (tabs && tabs[0]) {
+        context = await getReplyContext(tabs[0].id);
+    }
+
+    const generatedText = await aiService.write(prompt, context);
     showResult(generatedText);
   } catch (err) {
     showError(err.message);
@@ -83,7 +89,8 @@ btnPolish.addEventListener('click', async () => {
         return;
     }
 
-    const polishedText = await aiService.polish(currentBody);
+    const context = await getReplyContext(tabId);
+    const polishedText = await aiService.polish(currentBody, context);
     showResult(polishedText);
 
   } catch (err) {
@@ -93,3 +100,75 @@ btnPolish.addEventListener('click', async () => {
     setLoading(false);
   }
 });
+
+async function getReplyContext(tabId) {
+    try {
+        console.log('getReplyContext called for tabId:', tabId);
+        const details = await browser.compose.getComposeDetails(tabId);
+        console.log('Compose details:', details);
+
+        if (details.type === 'reply' || details.type === 'replyAll' || details.relatedMessageId) {
+             console.log('Is reply/replyAll or has relatedMessageId');
+             if (details.relatedMessageId) {
+                console.log('Found relatedMessageId:', details.relatedMessageId);
+                
+                // Try getting the full message
+                const fullMessage = await browser.messages.getFull(details.relatedMessageId);
+                console.log('Full message retrieved:', fullMessage);
+                
+                 let body = '';
+                 
+                 // Helper to find parts recursively
+                 const findPart = (parts, targetType) => {
+                     for (const part of parts) {
+                         // Check strictly or startsWith since contentType can include charset
+                         const type = (part.contentType || '').toLowerCase();
+                         if (type.startsWith(targetType) && part.body) {
+                             return part.body;
+                         } else if (part.parts) {
+                             const found = findPart(part.parts, targetType);
+                             if (found) return found;
+                         }
+                     }
+                     return null;
+                 };
+
+                 if (fullMessage.parts) {
+                    console.log('Searching for text/plain...');
+                    body = findPart(fullMessage.parts, 'text/plain');
+                    
+                    if (!body) {
+                        console.log('text/plain not found, searching for text/html...');
+                        const html = findPart(fullMessage.parts, 'text/html');
+                        if (html) {
+                            console.log('text/html found, stripping tags...');
+                            // Simple HTML to Text
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = html;
+                            body = tempDiv.textContent || tempDiv.innerText || '';
+                            // Fallback regex if DOM manip fails in background (though this is panel, so valid)
+                            if (!body) {
+                                body = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                            }
+                        }
+                    }
+                 }
+                 
+                 if (!body && fullMessage.body) {
+                     console.log('Using simple body fallback');
+                     body = fullMessage.body;
+                 }
+                 
+                 console.log('Extracted context length:', body.length);
+                 return body.substring(0, 2000); 
+             } else {
+                 console.log('No relatedMessageId found in details');
+             }
+        } else {
+            console.log('Not a reply/replyAll type and no relatedMessageId');
+        }
+    } catch (e) {
+        console.warn('Failed to get reply context:', e);
+    }
+    return '';
+}
