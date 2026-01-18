@@ -2,7 +2,8 @@ const defaultSettings = {
   provider: 'openai',
   baseUrl: 'https://api.openai.com/v1',
   apiKey: '',
-  modelName: 'gpt-4o-mini'
+  modelName: 'gpt-4o-mini',
+  targetLang: 'English'
 };
 
 const providers = {
@@ -32,6 +33,7 @@ function restoreOptions() {
     document.querySelector('#base-url').value = res.baseUrl;
     document.querySelector('#api-key').value = res.apiKey;
     document.querySelector('#model-name').value = res.modelName;
+    document.querySelector('#target-lang').value = res.targetLang || 'English';
   });
 }
 
@@ -98,12 +100,14 @@ function saveOptions(e) {
   const baseUrl = document.querySelector('#base-url').value;
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
+  const targetLang = document.querySelector('#target-lang').value;
 
   browser.storage.local.set({
     provider,
     baseUrl,
     apiKey,
-    modelName
+    modelName,
+    targetLang
   }).then(() => {
     const status = document.querySelector('#status');
     status.textContent = 'Options saved.';

@@ -20,7 +20,7 @@
     "activeTab"
   ],
   "background": {
-    "scripts": ["background/background.js"]
+    "scripts": ["lib/ai_service.js", "background/background.js"]
   },
   "options_ui": {
     "page": "options/options.html",

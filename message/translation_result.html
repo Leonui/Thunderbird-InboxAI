@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Translation Result</title>
+  <style>
+    body {
+      padding: 15px;
+      font-family: sans-serif;
+      min-width: 300px;
+    }
+    #result {
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="status" class="loading">Translating...</div>
+  <div id="result"></div>
+  <script src="../lib/ai_service.js"></script>
+  <script src="translation_result.js"></script>
+</body>
+</html>
