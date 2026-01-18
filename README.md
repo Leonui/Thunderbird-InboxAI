@@ -84,4 +84,4 @@ If you prefer to build manually or are on Windows without a bash environment:
 
 ## License
 
-MIT
+Mozilla Public License 2.0
