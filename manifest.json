@@ -2,11 +2,11 @@
   "manifest_version": 2,
   "name": "InboxAI",
   "description": "InboxAI helps you translate, polish, and write emails.",
-  "version": "1.0.0",
-  "author": "Antigravity",
+  "version": "0.1.0",
+  "author": "InboxAI Developer",
   "browser_specific_settings": {
     "gecko": {
-      "id": "ai-assistant@antigravity.dev",
+      "id": "inbox-ai@angme.org",
       "strict_min_version": "115.0"
     }
   },
