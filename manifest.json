@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "InboxAI",
   "description": "InboxAI helps you translate, polish, and write emails.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "InboxAI Developer",
   "browser_specific_settings": {
     "gecko": {
@@ -28,12 +28,8 @@
   },
   "compose_action": {
     "default_icon": "icons/icon-32.png",
-    "default_title": "AI Assistant",
+    "default_title": "InboxAI",
     "default_popup": "compose/compose_panel.html"
-  },
-  "message_display_action": {
-    "default_icon": "icons/icon-32.png",
-    "default_title": "Translate Email",
-    "default_popup": "message/message_logic.html"
   }
+
 }

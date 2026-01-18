@@ -41,18 +41,46 @@ Before using InboxAI, you must configure your AI provider settings:
 4.  **Polish**: Type your draft in the email body, then click "Polish Draft".
 5.  The result will appear in the popup. Click **Copy to Clipboard** and paste it into your email.
 
-### Translating (Message Window, NOT WORKING YET)
-1.  Open an email you want to translate.
-2.  Click the **InboxAI Translate** button in the message header toolbar.
-3.  Enter the target language (default is English) and click **Translate**.
+### Translating (Context Menu)
+1.  Select text in an email you want to translate.
+2.  Right-click the selection.
+3.  Click **InboxAI-Translate**.
+4.  The translation will appear in a popup window.
 
-## Building
+## Source Code & Build Instructions
 
-To package the extension into an `.xpi` file:
+### Prerequisites
 
-```bash
-zip -r ./thunderbird-ai-plugin.xpi . -x "*.git*" -x "*.DS_Store*"
-```
+*   **Operating System**: Linux preferred (tested on Ubuntu), but cross-platform (Windows/macOS) compatible given standard tools.
+*   **Tools**: `zip` (Info-ZIP) utility.
+*   **Node.js/NPM**: Not used for building/transpilation (Vanilla JS). Used only for development convenience if any.
+
+### Build Script
+
+The project includes a `build.sh` script for Linux/macOS.
+
+1.  Open a terminal in the project root.
+2.  Run the build script:
+
+    ```bash
+    ./build.sh
+    ```
+
+    This will generate `thunderbird-ai-plugin.xpi` in the same directory.
+
+### Manual Build Instructions
+
+If you prefer to build manually or are on Windows without a bash environment:
+
+1.  Navigate to the project root directory.
+2.  Select all files **except**:
+    *   `.git/` (and `.gitignore`)
+    *   `.DS_Store`
+    *   `build.sh`
+    *   `*.xpi`
+3.  Zip the selected content.
+    *   **Command Line**: `zip -r thunderbird-ai-plugin.xpi . -x "*.git*" -x "*.DS_Store*" -x "build.sh"`
+4.  Rename the result to `thunderbird-ai-plugin.xpi`.
 
 ## License
 

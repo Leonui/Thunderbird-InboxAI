@@ -4,7 +4,7 @@ console.log("Thunderbird AI Assistant Background Script Loaded");
 // Future expansion: Context Menus
 browser.menus.create({
   id: "ai-translate-selection",
-  title: "Translate Selection",
+  title: "InboxAI-Translate",
   contexts: ["selection"]
 });
 

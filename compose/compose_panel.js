@@ -142,10 +142,11 @@ async function getReplyContext(tabId) {
                         const html = findPart(fullMessage.parts, 'text/html');
                         if (html) {
                             console.log('text/html found, stripping tags...');
-                            // Simple HTML to Text
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = html;
-                            body = tempDiv.textContent || tempDiv.innerText || '';
+                            console.log('text/html found, stripping tags...');
+                            // Simple HTML to Text using DOMParser
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            body = doc.body.textContent || doc.body.innerText || '';
                             // Fallback regex if DOM manip fails in background (though this is panel, so valid)
                             if (!body) {
                                 body = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
