@@ -19,7 +19,7 @@ jobs:
       - name: Build XPI Package
         run: |
           # Create the .xpi file (zipping the contents)
-          zip -r inbox-ai.xpi . -x "*.git*" -x "*.github*" -x "*.DS_Store*" -x ".gitignore"
+          zip -r inbox-ai.xpi . -x "*.git*" -x "*.github*" -x "*.DS_Store*" -x ".gitignore" -x "*.sh"
           echo "XPI package created: inbox-ai.xpi"
 
       - name: Create Release and Upload Asset
