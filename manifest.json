@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "InboxAI",
   "description": "InboxAI helps you translate, polish, and write emails.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "InboxAI Developer",
   "browser_specific_settings": {
     "gecko": {
@@ -12,12 +12,9 @@
   },
   "permissions": [
     "storage",
-    "accountsRead",
     "messagesRead",
-    "messagesModify",
     "compose",
-    "menus",
-    "activeTab"
+    "menus"
   ],
   "background": {
     "scripts": ["lib/ai_service.js", "background/background.js"]

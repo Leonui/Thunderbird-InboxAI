@@ -45,6 +45,19 @@
         </select>
       </div>
 
+      <div class="form-group" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; background-color: #f9f9f9;">
+        <label><strong>Privacy & Data</strong></label>
+        <div style="margin-top: 5px;">
+            <input type="checkbox" id="data-opt-in" name="dataOptIn">
+            <label for="data-opt-in" style="font-weight: normal; display: inline;">
+                Allow InboxAI to send email content to the selected AI provider.
+            </label>
+        </div>
+        <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+            When enabled, features like Translate, Write and Polish will send the selected text or email context (text-parts only) to your configured AI provider (e.g., OpenAI). No data is sent without your explicit action.
+        </p>
+      </div>
+
       <div class="actions">
         <button type="submit" class="primary">Save Settings</button>
         <button type="button" id="test-connection" style="margin-left: 10px;">Test Connection</button>
