@@ -4,6 +4,7 @@ const defaultSettings = {
   apiKey: '',
   modelName: 'gpt-4o-mini',
   targetLang: 'English',
+  rundownLang: 'English',
   dataOptIn: false
 };
 
@@ -35,6 +36,7 @@ function restoreOptions() {
     document.querySelector('#api-key').value = res.apiKey;
     document.querySelector('#model-name').value = res.modelName;
     document.querySelector('#target-lang').value = res.targetLang || 'English';
+    document.querySelector('#rundown-lang').value = res.rundownLang || 'English';
     document.querySelector('#data-opt-in').checked = res.dataOptIn || false;
   });
 }
@@ -103,6 +105,7 @@ function saveOptions(e) {
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
   const targetLang = document.querySelector('#target-lang').value;
+  const rundownLang = document.querySelector('#rundown-lang').value;
   const dataOptIn = document.querySelector('#data-opt-in').checked;
 
   browser.storage.local.set({
@@ -111,6 +114,7 @@ function saveOptions(e) {
     apiKey,
     modelName,
     targetLang,
+    rundownLang,
     dataOptIn
   }).then(() => {
     const status = document.querySelector('#status');

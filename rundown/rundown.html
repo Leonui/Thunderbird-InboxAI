@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Daily Rundown</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    #status {
+      color: #666;
+      font-style: italic;
+    }
+    #report {
+      white-space: normal;
+    }
+    h2, h3 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+      margin-top: 20px;
+      color: #333;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 5px;
+    }
+    strong {
+      color: #000;
+      font-weight: 600;
+    }
+    p {
+      margin: 10px 0;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h2>Daily Email Rundown</h2>
+  <div id="status">Loading unread emails...</div>
+  <div id="report"></div>
+  
+  <script src="../lib/ai_service.js"></script>
+  <script src="rundown.js"></script>
+</body>
+</html>
