@@ -8,7 +8,7 @@ async function generateRundown() {
     
     // Query for unread messages. 
     // We might want to filter by date but 'unread' is the primary criteria requested.
-    const messages = await browser.messages.query({ unread: true });
+    const messages = await messenger.messages.query({ unread: true });
     
     // Convert to regular array and sort by date descending manually to be safe, 
     // though query usually returns in order.
@@ -129,13 +129,25 @@ async function generateRundown() {
 
     const report = await aiService.generate(prompt, "You are a helpful executive assistant specialized in email productivity.");
     
-    statusDiv.display = 'none';
-    reportDiv.innerHTML = parseMarkdown(report);
+    statusDiv.style.display = 'none';
+    
+    // safe parsing
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(parseMarkdown(report), 'text/html');
+    reportDiv.innerHTML = '';
+    // Append children safely
+    while (doc.body.firstChild) {
+        reportDiv.appendChild(doc.body.firstChild);
+    }
 
   } catch (err) {
     console.error(err);
     statusDiv.textContent = '';
-    reportDiv.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+    reportDiv.innerHTML = '';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'error';
+    errDiv.textContent = `Error: ${err.message}`;
+    reportDiv.appendChild(errDiv);
   }
 }
 

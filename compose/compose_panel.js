@@ -80,7 +80,7 @@ btnPolish.addEventListener('click', async () => {
     
     // We still need to read from the draft to polish it
     const tabId = tabs[0].id;
-    const details = await browser.compose.getComposeDetails(tabId);
+    const details = await messenger.compose.getComposeDetails(tabId);
     let currentBody = details.plainTextBody || details.body;
 
     if (!currentBody || currentBody.trim() === '') {
@@ -104,7 +104,7 @@ btnPolish.addEventListener('click', async () => {
 async function getReplyContext(tabId) {
     try {
         console.log('getReplyContext called for tabId:', tabId);
-        const details = await browser.compose.getComposeDetails(tabId);
+        const details = await messenger.compose.getComposeDetails(tabId);
         console.log('Compose details:', details);
 
         if (details.type === 'reply' || details.type === 'replyAll' || details.relatedMessageId) {
@@ -113,7 +113,7 @@ async function getReplyContext(tabId) {
                 console.log('Found relatedMessageId:', details.relatedMessageId);
                 
                 // Try getting the full message
-                const fullMessage = await browser.messages.getFull(details.relatedMessageId);
+                const fullMessage = await messenger.messages.getFull(details.relatedMessageId);
                 console.log('Full message retrieved:', fullMessage);
                 
                  let body = '';
