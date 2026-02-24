@@ -10,31 +10,23 @@ async function generateRundown() {
     // We might want to filter by date but 'unread' is the primary criteria requested.
     const messages = await messenger.messages.query({ unread: true });
     
-    // Convert to regular array and sort by date descending manually to be safe, 
-    // though query usually returns in order.
-    // messages.messages is the array (MessageList object acts like array but let's be safe)
     let msgList = [];
-    if (messages.messages) {
-        for (let m of messages.messages) {
-            msgList.push(m);
+    const MAX_PAGES = 5;
+    let page = messages;
+    let pageCount = 0;
+
+    while (page) {
+      if (page.messages) {
+        for (let m of page.messages) {
+          msgList.push(m);
         }
-    } else {
-        // Depending on Thunderbird version, might be async iterator or direct array
-        // But WebExtension API usually returns MessageList
-        // Let's iterate the MessageList
-        let page = messages;
-        while (page) {
-             for (let m of page.messages) {
-                 msgList.push(m);
-             }
-             if (page.id) {
-                 // It has more pages, but for rundown let's limit to first page or first N
-                 // to avoid fetching thousands.
-                 break; 
-             } else {
-                 break;
-             }
-        }
+      }
+      pageCount++;
+      if (page.id && pageCount < MAX_PAGES) {
+        page = await messenger.messages.continueList(page.id);
+      } else {
+        break;
+      }
     }
 
     if (msgList.length === 0) {
@@ -152,27 +144,28 @@ async function generateRundown() {
 }
 
 function parseMarkdown(text) {
+  // SECURITY: Escape HTML entities FIRST to prevent injection from AI output
   let html = text
-    // Header 3
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+  // Apply markdown transforms on escaped text
+  html = html
     .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    // Header 2
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    // Bold
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Italic
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // List items
     .replace(/^\- (.*$)/gim, '<li>$1</li>');
-  
-  // Wrap lists in <ul> (simple heuristic: if we have <li>s, wrap groups of them)
-  // Or just rely on browser being forgiving or standard block spacing.
-  // Better: replace newlines with <br> for non-list items or paragraphs.
-  
-  // Simple rendering: split by lines
+
+  // Wrap consecutive <li> elements in <ul> tags
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, (match) => {
+    return '<ul>' + match + '</ul>';
+  });
+
   return html.split('\n').map(line => {
-    if (line.includes('<h3>') || line.includes('<h2>') || line.includes('<li>')) {
-        return line;
-    }
+    if (/<(h[23]|li|ul|\/ul)/.test(line)) return line;
     if (line.trim() === '') return '';
     return `<p>${line}</p>`;
   }).join('');

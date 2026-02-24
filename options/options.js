@@ -54,7 +54,7 @@ async function testConnection() {
   const baseUrl = document.querySelector('#base-url').value;
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
-  
+
   status.textContent = 'Testing connection...';
   status.classList.add('visible');
   status.style.color = '#333';
@@ -66,34 +66,13 @@ async function testConnection() {
   }
 
   try {
-    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
-    const url = `${cleanBaseUrl}/chat/completions`;
-    
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-            model: modelName,
-            messages: [{ role: 'user', content: 'test' }],
-            max_tokens: 5
-        })
-    });
-
-    if (response.ok) {
-        status.textContent = 'Connection successful!';
-        status.style.color = 'green';
-    } else {
-        const errorText = await response.text();
-        status.textContent = `Error: ${response.status}`;
-        console.error('Test failed:', errorText);
-        status.style.color = 'red';
-    }
+    const service = new window.AIService();
+    await service.testConnection(baseUrl, apiKey, modelName);
+    status.textContent = 'Connection successful!';
+    status.style.color = 'green';
   } catch (err) {
-      status.textContent = `Error: ${err.message}`;
-      status.style.color = 'red';
+    status.textContent = `Error: ${err.message}`;
+    status.style.color = 'red';
   }
 }
 

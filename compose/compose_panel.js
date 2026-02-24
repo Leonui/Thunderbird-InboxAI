@@ -29,14 +29,14 @@ function showError(msg) {
   errorDiv.textContent = msg;
 }
 
-btnCopy.addEventListener('click', () => {
-  resultText.select();
-  document.execCommand('copy');
-  // OR use navigator.clipboard if available in this context
-  // navigator.clipboard.writeText(resultText.value); 
-  // execCommand is safer for older extension contexts but clipboard API is standard.
-  // navigator.clipboard works in popup if focused.
-  
+btnCopy.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(resultText.value);
+  } catch (err) {
+    resultText.select();
+    document.execCommand('copy');
+  }
+
   const originalText = btnCopy.textContent;
   btnCopy.textContent = 'Copied!';
   setTimeout(() => {
@@ -53,7 +53,7 @@ btnWrite.addEventListener('click', async () => {
 
   setLoading(true);
   try {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    const tabs = await messenger.tabs.query({ active: true, currentWindow: true });
     let context = '';
     if (tabs && tabs[0]) {
         context = await getReplyContext(tabs[0].id);
@@ -73,7 +73,7 @@ btnWrite.addEventListener('click', async () => {
 btnPolish.addEventListener('click', async () => {
   setLoading(true);
   try {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    const tabs = await messenger.tabs.query({ active: true, currentWindow: true });
     if (!tabs || !tabs[0]) {
         throw new Error('Could not find active compose tab.');
     }
@@ -103,70 +103,49 @@ btnPolish.addEventListener('click', async () => {
 
 async function getReplyContext(tabId) {
     try {
-        console.log('getReplyContext called for tabId:', tabId);
         const details = await messenger.compose.getComposeDetails(tabId);
-        console.log('Compose details:', details);
 
         if (details.type === 'reply' || details.type === 'replyAll' || details.relatedMessageId) {
-             console.log('Is reply/replyAll or has relatedMessageId');
              if (details.relatedMessageId) {
-                console.log('Found relatedMessageId:', details.relatedMessageId);
-                
-                // Try getting the full message
                 const fullMessage = await messenger.messages.getFull(details.relatedMessageId);
-                console.log('Full message retrieved:', fullMessage);
-                
-                 let body = '';
-                 
-                 // Helper to find parts recursively
-                 const findPart = (parts, targetType) => {
-                     for (const part of parts) {
-                         // Check strictly or startsWith since contentType can include charset
-                         const type = (part.contentType || '').toLowerCase();
-                         if (type.startsWith(targetType) && part.body) {
-                             return part.body;
-                         } else if (part.parts) {
-                             const found = findPart(part.parts, targetType);
-                             if (found) return found;
-                         }
-                     }
-                     return null;
-                 };
+                let body = '';
 
-                 if (fullMessage.parts) {
-                    console.log('Searching for text/plain...');
+                const findPart = (parts, targetType) => {
+                    for (const part of parts) {
+                        const type = (part.contentType || '').toLowerCase();
+                        if (type.startsWith(targetType) && part.body) {
+                            return part.body;
+                        } else if (part.parts) {
+                            const found = findPart(part.parts, targetType);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+
+                if (fullMessage.parts) {
                     body = findPart(fullMessage.parts, 'text/plain');
-                    
+
                     if (!body) {
-                        console.log('text/plain not found, searching for text/html...');
                         const html = findPart(fullMessage.parts, 'text/html');
                         if (html) {
-                            console.log('text/html found, stripping tags...');
-                            console.log('text/html found, stripping tags...');
-                            // Simple HTML to Text using DOMParser
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(html, 'text/html');
                             body = doc.body.textContent || doc.body.innerText || '';
-                            // Fallback regex if DOM manip fails in background (though this is panel, so valid)
                             if (!body) {
                                 body = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
                             }
                         }
                     }
-                 }
-                 
-                 if (!body && fullMessage.body) {
-                     console.log('Using simple body fallback');
-                     body = fullMessage.body;
-                 }
-                 
-                 console.log('Extracted context length:', body.length);
-                 return body.substring(0, 2000); 
-             } else {
-                 console.log('No relatedMessageId found in details');
+                }
+
+                if (!body && fullMessage.body) {
+                    body = fullMessage.body;
+                }
+
+                body = body || '';
+                return body.substring(0, 2000);
              }
-        } else {
-            console.log('Not a reply/replyAll type and no relatedMessageId');
         }
     } catch (e) {
         console.warn('Failed to get reply context:', e);
