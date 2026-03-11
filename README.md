@@ -9,9 +9,11 @@ InboxAI is a Thunderbird MailExtension that leverages AI to supercharge your ema
 - **Translate**: Translate incoming emails into your preferred language instantly.
 - **Multi-Provider Support**: Built-in support for OpenAI and DeepSeek, plus a Custom option for other OpenAI-compatible APIs.
 
-## Installation
+## Installation 
+### From Thunderbird Add-ons (Recommended)
+> [InboxAI](https://addons.thunderbird.net/en-US/thunderbird/addon/inboxai/)
 
-### From XPI File (Recommended)
+### From XPI File 
 1.  Download the latest `thunderbird-ai-plugin.xpi` file.
 2.  Open **Thunderbird**.
 3.  Go to **Tools** -> **Add-ons and Themes**.
