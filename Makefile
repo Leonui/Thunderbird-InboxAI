@@ -22,11 +22,37 @@ release: ## Create a release (usage: make release v=0.1.6)
 		echo "Last tag: $(LAST_TAG)"; \
 		exit 1; \
 	fi
+	@if ! git diff --quiet || ! git diff --cached --quiet; then \
+		echo "Release aborted: commit or stash tracked changes first."; \
+		exit 1; \
+	fi
+	@if git rev-parse -q --verify "refs/tags/v$(v)" >/dev/null; then \
+		echo "Release aborted: tag v$(v) already exists."; \
+		exit 1; \
+	fi
 	@echo "Releasing v$(v)..."
-	@sed -i 's/"version": ".*"/"version": "$(v)"/' $(VERSION_FILE)
+	@tmp_version_file="$$(mktemp)"; \
+	sed 's/"version": "[^"]*"/"version": "$(v)"/' $(VERSION_FILE) > "$$tmp_version_file"; \
+	mv "$$tmp_version_file" $(VERSION_FILE)
 	@git add $(VERSION_FILE)
-	@git commit -m "chore: bump version to $(v)"
-	@git tag -a "v$(v)" -m "v$(v): $$(git log --oneline $(LAST_TAG)..HEAD~1 | paste -sd ', ')"
+	@git commit -m "chore: bump version to $(v)" -- $(VERSION_FILE)
+	@tmp_tag_file="$$(mktemp)"; \
+	if [ -n "$(LAST_TAG)" ]; then \
+		{ \
+			echo "Release v$(v)"; \
+			echo ""; \
+			echo "Changes since $(LAST_TAG):"; \
+			git log --format='- %s' $(LAST_TAG)..HEAD; \
+		} > "$$tmp_tag_file"; \
+	else \
+		{ \
+			echo "Release v$(v)"; \
+			echo ""; \
+			echo "- Initial release."; \
+		} > "$$tmp_tag_file"; \
+	fi; \
+	git tag -a "v$(v)" -F "$$tmp_tag_file"; \
+	rm -f "$$tmp_tag_file"
 	@echo ""
 	@echo "Done! Tag v$(v) created."
 	@echo "Run 'git push origin main --tags' to publish."
