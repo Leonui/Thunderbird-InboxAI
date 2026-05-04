@@ -1,17 +1,38 @@
 const statusDiv = document.getElementById('status');
 const reportDiv = document.getElementById('report');
 const aiService = new window.AIService();
+const MAX_MESSAGES = 20;
+const MAX_MESSAGE_SNIPPET_CHARS = 800;
+const MAX_PAGES = 5;
+
+function cleanAuthor(author) {
+  let cleaned = author || 'Unknown';
+  if (cleaned.includes('<')) {
+    cleaned = cleaned.split('<')[0].replace(/"/g, '').trim();
+  }
+
+  return cleaned || 'Unknown';
+}
+
+async function getMessageSnippet(messageId) {
+  try {
+    const fullMessage = await messenger.messages.getFull(messageId);
+    const body = window.InboxAIText.extractTextFromFullMessage(fullMessage);
+    const payload = window.InboxAIText.truncateText(body, MAX_MESSAGE_SNIPPET_CHARS, { collapseWhitespace: true });
+    return payload.text + (payload.truncated ? '...' : '');
+  } catch (err) {
+    console.warn('Failed to read message body for rundown:', err);
+    return '';
+  }
+}
 
 async function generateRundown() {
   try {
     statusDiv.textContent = "Fetching unread emails...";
     
-    // Query for unread messages. 
-    // We might want to filter by date but 'unread' is the primary criteria requested.
     const messages = await messenger.messages.query({ unread: true });
     
     let msgList = [];
-    const MAX_PAGES = 5;
     let page = messages;
     let pageCount = 0;
 
@@ -34,25 +55,36 @@ async function generateRundown() {
       return;
     }
 
-    // Sort by date desc
     msgList.sort((a, b) => b.date - a.date);
 
-    // Limit to top 30 to fit in context
-    const limit = 30;
-    const topMessages = msgList.slice(0, limit);
+    const topMessages = msgList.slice(0, MAX_MESSAGES);
     
+    statusDiv.textContent = `Reading ${topMessages.length} unread emails...`;
+
+    const emailRecords = [];
+    for (const [index, message] of topMessages.entries()) {
+      statusDiv.textContent = `Reading ${index + 1} of ${topMessages.length} unread emails...`;
+      const snippet = await getMessageSnippet(message.id);
+      emailRecords.push({
+        date: new Date(message.date).toLocaleDateString(),
+        author: cleanAuthor(message.author),
+        subject: message.subject || '(no subject)',
+        snippet
+      });
+    }
+
     statusDiv.textContent = `Analyzing ${topMessages.length} unread emails...`;
 
-    // Prepare data for AI
-    const emailData = topMessages.map(m => {
-      // Clean author
-      let author = m.author || 'Unknown';
-      if (author.includes('<')) {
-        author = author.split('<')[0].replace(/"/g, '').trim();
-      }
-      
-      return `- [${new Date(m.date).toLocaleDateString()}] From: ${author}, Subject: ${m.subject}`;
-    }).join('\n');
+    const emailData = emailRecords.map((message, index) => {
+      const snippet = message.snippet || 'No text body was available.';
+      return [
+        `Email ${index + 1}`,
+        `Date: ${message.date}`,
+        `From: ${message.author}`,
+        `Subject: ${message.subject}`,
+        `Snippet: ${snippet}`
+      ].join('\n');
+    }).join('\n\n');
 
     const config = await browser.storage.local.get('rundownLang');
     let langInstruction = '';
@@ -60,7 +92,7 @@ async function generateRundown() {
         langInstruction = `\n\n**Language Requirement:**\nPlease write the entire summary in **${config.rundownLang}**.\n`;
     }
 
-    const prompt = `Here is a list of unread emails. Please provide a "Daily Rundown" summary.
+    const prompt = `Here are bounded text snippets from the newest unread emails. Please provide a "Daily Rundown" summary.
     **Instructions:**
     ${langInstruction}
 
@@ -82,10 +114,16 @@ async function generateRundown() {
       - Identify and highlight time-sensitive items
       - Extract key action items or deadlines
       - Note important senders (executives, clients, team leads)
-      - Summarize the main point of each email
+      - Summarize only facts supported by the provided snippets
       - Flag anything requiring immediate attention
 
     4. **Output Structure**:
+    ### Overview
+    - Summarize the unread scope and the most important themes.
+
+    ### Needs Reply
+    - **[Sender Name]**: [Brief reason this likely needs a response]
+
     ### [Category Name]
     - **[Sender Name]**: [Brief summary of email content]
     - **[Sender Name]**: [Brief summary with deadline/action if applicable]
@@ -99,24 +137,13 @@ async function generateRundown() {
     - Updates from leadership or key stakeholders
     - General announcements and newsletters last
 
-    **Example Output Format:**
-
-    ### Urgent/Time-Sensitive
-    - **Sarah Chen (VP Sales)**: Q4 revenue report needs your review and approval by EOD today
-    - **IT Security**: Password reset required within 24 hours to maintain system access
-
-    ### Action Required
-    - **Project Team**: Feedback requested on new feature proposal by Friday
-    - **HR Department**: Benefits enrollment deadline extended to next Monday
-
-    ### Important Updates
-    - **CEO Office**: Company all-hands meeting scheduled for Thursday 2pm
-    - **Marketing**: New brand guidelines released, review at your convenience
-
-    Please provide clear, scannable summaries that help the recipient quickly understand what needs attention and what can wait.
+    Please provide clear, scannable summaries that help the recipient quickly understand what needs attention and what can wait. If a snippet does not contain enough detail, say so briefly instead of inventing details.
         
     
-    List:
+    Unread email count analyzed: ${topMessages.length}
+    Total unread returned by Thunderbird: ${msgList.length}
+
+    Email snippets:
     ${emailData}`;
 
     const report = await aiService.generate(prompt, "You are a helpful executive assistant specialized in email productivity.");
