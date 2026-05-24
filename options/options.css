@@ -1,84 +1,119 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #f0f0f4;
-  color: #333;
-  margin: 0;
-  padding: 20px;
+  min-width: 520px;
+  padding: 24px;
 }
 
-.container {
-  max-width: 500px;
+.settings-shell {
+  max-width: 720px;
   margin: 0 auto;
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-h1 {
-  margin-top: 0;
-  margin-bottom: 24px;
+.settings-header {
+  margin-bottom: 18px;
+}
+
+.settings-header img {
+  width: 34px;
+  height: 34px;
+}
+
+.settings-header h1 {
   font-size: 24px;
-  color: #222;
+}
+
+.settings-form {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-section {
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius);
+  background: var(--inboxai-surface);
+  padding: 18px;
+  box-shadow: var(--inboxai-shadow);
+}
+
+.settings-section h2 {
+  margin: 0 0 14px;
+  color: var(--inboxai-text);
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid.two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .form-group {
-  margin-bottom: 20px;
+  display: grid;
+  gap: 6px;
 }
 
-label {
-  display: block;
-  margin-bottom: 8px;
+.form-group label {
+  margin-bottom: 0;
+}
+
+.privacy-section {
+  background: #fbfcfe;
+}
+
+.privacy-section p {
+  margin: 10px 0 0;
+  color: var(--inboxai-muted);
+  font-size: 13px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  color: var(--inboxai-text);
   font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: none;
 }
 
-input[type="text"],
-input[type="url"],
-input[type="password"],
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box; /* important for padding */
-  font-size: 14px;
-}
-
-input:focus {
-  border-color: #0060df;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 96, 223, 0.2);
+.checkbox-row input {
+  width: auto;
+  margin-top: 2px;
 }
 
 .actions {
   display: flex;
   align-items: center;
-  margin-top: 30px;
+  gap: 10px;
+  padding-top: 4px;
 }
 
-button.primary {
-  background-color: #0060df;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+.actions .status {
+  flex: 1;
+  min-height: 34px;
 }
 
-button.primary:hover {
-  background-color: #003eaa;
-}
+@media (max-width: 620px) {
+  body {
+    min-width: 0;
+    padding: 16px;
+  }
 
-.status {
-  margin-left: 15px;
-  font-size: 14px;
-  color: #2e8b57;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
+  .form-grid.two-column {
+    grid-template-columns: 1fr;
+  }
 
-.status.visible {
-  opacity: 1;
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions .status {
+    width: 100%;
+  }
 }

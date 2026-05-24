@@ -1,0 +1,29 @@
+body {
+  min-width: 320px;
+  max-width: 560px;
+  padding: 14px;
+  background: var(--inboxai-surface);
+}
+
+.translation-shell {
+  display: grid;
+  gap: 12px;
+}
+
+.app-header img {
+  width: 26px;
+  height: 26px;
+}
+
+#result {
+  display: none;
+  min-height: 120px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
+#result.visible {
+  display: block;
+}

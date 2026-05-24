@@ -2,83 +2,95 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InboxAI Settings</title>
+  <link rel="stylesheet" href="../shared/ui.css">
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
-  <div class="container">
-    <h1><img src="../icons/inboxai.svg" alt="Icon" style="vertical-align: middle; width: 32px; height: 32px; margin-right: 10px;">InboxAI Settings</h1>
-    <form id="settings-form">
-      <div class="form-group">
-        <label for="provider"><strong>Default Provider</strong></label>
-        <select id="provider" name="provider">
-            <option value="openai">OpenAI-compatible</option>
-            <option value="deepseek">DeepSeek</option>
-            <option value="custom">Custom</option>
-        </select>
-      </div>
+  <main class="settings-shell">
+    <header class="app-header settings-header">
+      <img src="../icons/inboxai.svg" alt="">
+      <h1>InboxAI Settings</h1>
+    </header>
 
-      <div class="form-group">
-        <label for="base-url"><strong>Base URL</strong> (e.g., https://api.openai.com/v1)</label>
-        <input type="url" id="base-url" name="baseUrl" placeholder="https://api.openai.com/v1" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="api-key"><strong>API Key</strong></label>
-        <input type="password" id="api-key" name="apiKey" placeholder="sk-..." required>
-      </div>
+    <form id="settings-form" class="settings-form">
+      <section class="settings-section" aria-labelledby="provider-section">
+        <h2 id="provider-section">Provider</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="provider">Default Provider</label>
+            <select id="provider" name="provider">
+              <option value="openai">OpenAI-compatible</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
 
-      <div class="form-group">
-        <label for="model-name"><strong>Model Name</strong> (e.g., gpt-3.5-turbo)</label>
-        <input type="text" id="model-name" name="modelName" placeholder="gpt-4o-mini" required>
-      </div>
+          <div class="form-group">
+            <label for="base-url">Base URL</label>
+            <input type="url" id="base-url" name="baseUrl" placeholder="https://api.openai.com/v1" required>
+          </div>
 
-      <div class="form-group">
-        <label for="target-lang"><strong>Target Language</strong> (for translation)</label>
-        <select id="target-lang" name="targetLang">
-          <option value="Arabic">Arabic</option>
-          <option value="Chinese">Chinese</option>
-          <option value="English">English</option>
-          <option value="French">French</option>
-          <option value="Russian">Russian</option>
-          <option value="Spanish">Spanish</option>
-        </select>
-      </div>
+          <div class="form-group">
+            <label for="api-key">API Key</label>
+            <input type="password" id="api-key" name="apiKey" placeholder="sk-..." required>
+          </div>
 
-      <div class="form-group">
-        <label for="rundown-lang"><strong>Rundown Language</strong> (for Daily Rundown)</label>
-        <select id="rundown-lang" name="rundownLang">
-          <option value="Arabic">Arabic</option>
-          <option value="Chinese">Chinese</option>
-          <option value="English">English</option>
-          <option value="French">French</option>
-          <option value="Russian">Russian</option>
-          <option value="Spanish">Spanish</option>
-        </select>
-      </div>
-
-      <div class="form-group" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; background-color: #f9f9f9;">
-        <label><strong>Privacy & Data</strong></label>
-        <div style="margin-top: 5px;">
-            <input type="checkbox" id="data-opt-in" name="dataOptIn">
-            <label for="data-opt-in" style="font-weight: normal; display: inline;">
-                Allow InboxAI to send email content to the configured AI provider.
-            </label>
+          <div class="form-group">
+            <label for="model-name">Model Name</label>
+            <input type="text" id="model-name" name="modelName" placeholder="gpt-4o-mini" required>
+          </div>
         </div>
-        <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
-            When enabled, features like Translate, Write and Polish will send the selected text or email context (text-parts only) to your configured AI provider (e.g., OpenAI). No data is sent without your explicit action.
-            <br><br>
-            <strong>Note:</strong> You are responsible for the selection and configuration of the third-party AI provider.
-        </p>
-      </div>
+      </section>
 
-      <div class="actions">
+      <section class="settings-section" aria-labelledby="language-section">
+        <h2 id="language-section">Language</h2>
+        <div class="form-grid two-column">
+          <div class="form-group">
+            <label for="target-lang">Target Language</label>
+            <select id="target-lang" name="targetLang">
+              <option value="Arabic">Arabic</option>
+              <option value="Chinese">Chinese</option>
+              <option value="English">English</option>
+              <option value="French">French</option>
+              <option value="Russian">Russian</option>
+              <option value="Spanish">Spanish</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="rundown-lang">Rundown Language</label>
+            <select id="rundown-lang" name="rundownLang">
+              <option value="Arabic">Arabic</option>
+              <option value="Chinese">Chinese</option>
+              <option value="English">English</option>
+              <option value="French">French</option>
+              <option value="Russian">Russian</option>
+              <option value="Spanish">Spanish</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-section privacy-section" aria-labelledby="privacy-section">
+        <h2 id="privacy-section">Privacy &amp; Data</h2>
+        <label class="checkbox-row" for="data-opt-in">
+          <input type="checkbox" id="data-opt-in" name="dataOptIn">
+          <span>Allow InboxAI to send email content to the configured AI provider.</span>
+        </label>
+        <p>
+          <strong>Note:</strong> You are responsible for the selection and configuration of the third-party AI provider.
+        </p>
+      </section>
+
+      <footer class="actions">
         <button type="submit" class="primary">Save Settings</button>
-        <button type="button" id="test-connection" style="margin-left: 10px;">Test Connection</button>
-        <span id="status" class="status"></span>
-      </div>
+        <button type="button" id="test-connection" class="secondary">Test Connection</button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </footer>
     </form>
-  </div>
+  </main>
   <script src="../lib/ai_service.js"></script>
   <script src="options.js"></script>
 </body>

@@ -1,0 +1,234 @@
+:root {
+  color-scheme: light;
+  --inboxai-accent: #0060df;
+  --inboxai-accent-hover: #0250bb;
+  --inboxai-accent-soft: #eaf2ff;
+  --inboxai-text: #1f2328;
+  --inboxai-muted: #5b6472;
+  --inboxai-border: #c9d0dc;
+  --inboxai-border-strong: #a8b1bf;
+  --inboxai-bg: #f5f7fb;
+  --inboxai-surface: #ffffff;
+  --inboxai-surface-alt: #f8f9fb;
+  --inboxai-success: #0a7d33;
+  --inboxai-success-bg: #e8f5ec;
+  --inboxai-danger: #c50042;
+  --inboxai-danger-bg: #fff0f5;
+  --inboxai-focus: rgba(0, 96, 223, 0.28);
+  --inboxai-radius: 7px;
+  --inboxai-radius-sm: 5px;
+  --inboxai-shadow: 0 8px 24px rgba(31, 35, 40, 0.08);
+  --inboxai-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--inboxai-text);
+  background: var(--inboxai-bg);
+  font-family: var(--inboxai-font);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 34px;
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius-sm);
+  background: var(--inboxai-surface-alt);
+  color: var(--inboxai-text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 8px 11px;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    color 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #eef2f7;
+  border-color: var(--inboxai-border-strong);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--inboxai-accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--inboxai-focus);
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+button.primary {
+  border-color: var(--inboxai-accent);
+  background: var(--inboxai-accent);
+  color: #ffffff;
+}
+
+button.primary:hover:not(:disabled) {
+  border-color: var(--inboxai-accent-hover);
+  background: var(--inboxai-accent-hover);
+}
+
+button.secondary {
+  background: var(--inboxai-surface);
+}
+
+button.subtle {
+  border-color: transparent;
+  background: transparent;
+}
+
+button.is-success {
+  border-color: var(--inboxai-success);
+  background: var(--inboxai-success-bg);
+  color: var(--inboxai-success);
+}
+
+label,
+.field-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--inboxai-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius-sm);
+  background: var(--inboxai-surface);
+  color: var(--inboxai-text);
+  padding: 9px 10px;
+}
+
+textarea {
+  line-height: 1.4;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #808997;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.app-header img {
+  flex: 0 0 auto;
+}
+
+.app-header h1,
+.app-header h2,
+.app-header h3 {
+  margin: 0;
+  color: var(--inboxai-text);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.status {
+  display: none;
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius-sm);
+  background: var(--inboxai-surface-alt);
+  color: var(--inboxai-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 8px 10px;
+}
+
+.status.visible,
+.status:not(:empty) {
+  display: block;
+}
+
+.status.loading,
+.status.is-loading {
+  border-color: #b8c7de;
+  background: var(--inboxai-accent-soft);
+  color: #174ea6;
+}
+
+.status.success,
+.status.is-success {
+  border-color: #a9d8b8;
+  background: var(--inboxai-success-bg);
+  color: var(--inboxai-success);
+}
+
+.status.error,
+.status.is-error,
+.error {
+  border-color: #f3b4ca;
+  background: var(--inboxai-danger-bg);
+  color: var(--inboxai-danger);
+}
+
+.error {
+  display: none;
+  border-radius: var(--inboxai-radius-sm);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-top: 8px;
+  padding: 8px 10px;
+}
+
+.error:not(:empty) {
+  display: block;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.button-row.single {
+  grid-template-columns: 1fr;
+}
+
+.panel {
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius);
+  background: var(--inboxai-surface);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

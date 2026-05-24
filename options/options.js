@@ -29,6 +29,12 @@ document.querySelector('#provider').addEventListener('change', handleProviderCha
 
 document.querySelector('#test-connection').addEventListener('click', testConnection);
 
+function setStatus(message, state) {
+  const status = document.querySelector('#status');
+  status.textContent = message;
+  status.className = message ? `status ${state} visible` : 'status';
+}
+
 function restoreOptions() {
   browser.storage.local.get(defaultSettings).then((res) => {
     document.querySelector('#provider').value = res.provider || 'openai';
@@ -50,29 +56,23 @@ function handleProviderChange(e) {
 }
 
 async function testConnection() {
-  const status = document.querySelector('#status');
   const baseUrl = document.querySelector('#base-url').value;
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
 
-  status.textContent = 'Testing connection...';
-  status.classList.add('visible');
-  status.style.color = '#333';
+  setStatus('Testing connection...', 'loading');
 
   if (!baseUrl || !apiKey) {
-      status.textContent = 'Please fill in Base URL and API Key.';
-      status.style.color = 'red';
-      return;
+    setStatus('Please fill in Base URL and API Key.', 'error');
+    return;
   }
 
   try {
     const service = new window.AIService();
     await service.testConnection(baseUrl, apiKey, modelName);
-    status.textContent = 'Connection successful!';
-    status.style.color = 'green';
+    setStatus('Connection successful!', 'success');
   } catch (err) {
-    status.textContent = `Error: ${err.message}`;
-    status.style.color = 'red';
+    setStatus(`Error: ${err.message}`, 'error');
   }
 }
 
@@ -96,11 +96,9 @@ function saveOptions(e) {
     rundownLang,
     dataOptIn
   }).then(() => {
-    const status = document.querySelector('#status');
-    status.textContent = 'Options saved.';
-    status.classList.add('visible');
+    setStatus('Options saved.', 'success');
     setTimeout(() => {
-      status.classList.remove('visible');
+      setStatus('', '');
     }, 2000);
   });
 }

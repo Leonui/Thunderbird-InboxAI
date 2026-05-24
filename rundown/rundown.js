@@ -5,6 +5,11 @@ const MAX_MESSAGES = 20;
 const MAX_MESSAGE_SNIPPET_CHARS = 800;
 const MAX_PAGES = 5;
 
+function setStatus(message, state = 'loading') {
+  statusDiv.textContent = message || '';
+  statusDiv.className = message ? `status ${state} visible` : 'status';
+}
+
 function cleanAuthor(author) {
   let cleaned = author || 'Unknown';
   if (cleaned.includes('<')) {
@@ -28,7 +33,7 @@ async function getMessageSnippet(messageId) {
 
 async function generateRundown() {
   try {
-    statusDiv.textContent = "Fetching unread emails...";
+    setStatus('Fetching unread emails...', 'loading');
     
     const messages = await messenger.messages.query({ unread: true });
     
@@ -51,7 +56,7 @@ async function generateRundown() {
     }
 
     if (msgList.length === 0) {
-      statusDiv.textContent = "No unread emails found.";
+      setStatus('No unread emails found.', 'success');
       return;
     }
 
@@ -59,11 +64,11 @@ async function generateRundown() {
 
     const topMessages = msgList.slice(0, MAX_MESSAGES);
     
-    statusDiv.textContent = `Reading ${topMessages.length} unread emails...`;
+    setStatus(`Reading ${topMessages.length} unread emails...`, 'loading');
 
     const emailRecords = [];
     for (const [index, message] of topMessages.entries()) {
-      statusDiv.textContent = `Reading ${index + 1} of ${topMessages.length} unread emails...`;
+      setStatus(`Reading ${index + 1} of ${topMessages.length} unread emails...`, 'loading');
       const snippet = await getMessageSnippet(message.id);
       emailRecords.push({
         date: new Date(message.date).toLocaleDateString(),
@@ -73,7 +78,7 @@ async function generateRundown() {
       });
     }
 
-    statusDiv.textContent = `Analyzing ${topMessages.length} unread emails...`;
+    setStatus(`Analyzing ${topMessages.length} unread emails...`, 'loading');
 
     const emailData = emailRecords.map((message, index) => {
       const snippet = message.snippet || 'No text body was available.';
@@ -148,7 +153,7 @@ async function generateRundown() {
 
     const report = await aiService.generate(prompt, "You are a helpful executive assistant specialized in email productivity.");
     
-    statusDiv.style.display = 'none';
+    setStatus('', '');
     
     // safe parsing
     const parser = new DOMParser();
@@ -161,7 +166,7 @@ async function generateRundown() {
 
   } catch (err) {
     console.error(err);
-    statusDiv.textContent = '';
+    setStatus('', '');
     reportDiv.innerHTML = '';
     const errDiv = document.createElement('div');
     errDiv.className = 'error';

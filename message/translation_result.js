@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const token = new URLSearchParams(window.location.search).get('token');
   const storageKey = token ? `pendingTranslation:${token}` : '';
 
+  function setStatus(message, state = 'loading') {
+    statusDiv.textContent = message || '';
+    statusDiv.className = message ? `status ${state} visible` : 'status';
+  }
+
   try {
     if (!storageKey) {
       throw new Error('No translation request found.');
@@ -15,24 +20,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const targetLang = data.targetLang || 'English';
 
     if (!text) {
-      statusDiv.textContent = '';
-      resultDiv.textContent = 'No text to translate found.';
+      setStatus('No text to translate found.', 'error');
       return;
     }
 
-    statusDiv.textContent = request.truncated
+    setStatus(request.truncated
       ? `Translating first ${text.length.toLocaleString()} characters to ${targetLang}...`
-      : `Translating to ${targetLang}...`;
+      : `Translating to ${targetLang}...`, 'loading');
 
     const aiService = new AIService();
     const translatedText = await aiService.translate(text, targetLang);
 
-    statusDiv.style.display = 'none';
+    setStatus('', '');
     resultDiv.textContent = translatedText;
+    resultDiv.classList.add('visible');
 
   } catch (error) {
-    statusDiv.className = 'error';
-    statusDiv.textContent = `Error: ${error.message}`;
+    setStatus(`Error: ${error.message}`, 'error');
   } finally {
     if (storageKey) {
       await browser.storage.local.remove(storageKey);

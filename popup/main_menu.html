@@ -2,67 +2,22 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InboxAI</title>
-  <style>
-    :root {
-      --accent: #0060df;
-      --accent-hover: #0250bb;
-      --border: #c9ced8;
-      --text: #202124;
-    }
-
-    body {
-      width: 220px;
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      color: var(--text);
-      padding: 12px;
-      box-sizing: border-box;
-    }
-
-    .title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 12px;
-      font-size: 15px;
-      line-height: 1.2;
-    }
-
-    .title img {
-      width: 24px;
-      height: 24px;
-    }
-
-    button {
-      width: 100%;
-      min-height: 36px;
-      border: 1px solid var(--accent);
-      border-radius: 6px;
-      background: var(--accent);
-      color: #fff;
-      cursor: pointer;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 9px 12px;
-      transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    }
-
-    button:hover {
-      background: var(--accent-hover);
-      border-color: var(--accent-hover);
-    }
-
-    button:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(0, 96, 223, 0.24);
-    }
-  </style>
+  <link rel="stylesheet" href="../shared/ui.css">
+  <link rel="stylesheet" href="main_menu.css">
 </head>
 <body>
-  <h3 class="title"><img src="../icons/inboxai.svg" alt="">InboxAI</h3>
-  <button id="btn-rundown">Daily Rundown</button>
+  <main class="menu">
+    <header class="app-header">
+      <img src="../icons/inboxai.svg" alt="">
+      <h1>InboxAI</h1>
+    </header>
+
+    <nav class="menu-actions" aria-label="InboxAI actions">
+      <button id="btn-rundown" class="primary menu-action" type="button">Daily Rundown</button>
+    </nav>
+  </main>
   <script src="main_menu.js"></script>
 </body>
 </html>

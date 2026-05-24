@@ -1,0 +1,51 @@
+body {
+  width: 360px;
+  padding: 14px;
+  background: var(--inboxai-surface);
+}
+
+.compose-panel {
+  display: grid;
+  gap: 13px;
+}
+
+.app-header img {
+  width: 28px;
+  height: 28px;
+}
+
+.section {
+  display: grid;
+  gap: 8px;
+}
+
+#prompt {
+  min-height: 88px;
+}
+
+.draft-actions {
+  padding: 10px;
+}
+
+.draft-actions .button-row {
+  margin-top: 8px;
+}
+
+.feedback {
+  display: grid;
+  gap: 8px;
+}
+
+#result-container {
+  display: none;
+  gap: 8px;
+}
+
+#result-container.visible {
+  display: grid;
+}
+
+#result-text {
+  min-height: 126px;
+  background: #fbfcfe;
+}

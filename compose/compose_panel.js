@@ -17,34 +17,47 @@ const MAX_CONTEXT_CHARS = 3000;
 
 let activeComposeTabId = null;
 
+function setStatus(message, state = 'loading') {
+  statusDiv.textContent = message || '';
+  statusDiv.className = message ? `status ${state} visible` : 'status';
+}
+
+function setButtonSuccess(button, message) {
+  const originalText = button.textContent;
+  button.textContent = message;
+  button.classList.add('is-success');
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.classList.remove('is-success');
+  }, 1500);
+}
+
 function appendNotice(message) {
   if (!message) {
     return;
   }
 
-  statusDiv.textContent = message;
-  statusDiv.style.display = 'block';
+  setStatus(message, 'notice');
 }
 
 function setLoading(isLoading) {
-  statusDiv.style.display = isLoading ? 'block' : 'none';
-  statusDiv.textContent = 'Processing...';
+  setStatus(isLoading ? 'Processing...' : '', 'loading');
   btnWrite.disabled = isLoading;
   btnReply.disabled = isLoading;
   btnPolish.disabled = isLoading;
   btnShorten.disabled = isLoading;
   btnInsert.disabled = isLoading;
   btnCopy.disabled = isLoading;
-  errorDiv.textContent = '';
   if (isLoading) {
-    resultContainer.style.display = 'none';
+    errorDiv.textContent = '';
+    resultContainer.classList.remove('visible');
     resultText.value = '';
   }
 }
 
 function showResult(text) {
   resultText.value = text;
-  resultContainer.style.display = 'block';
+  resultContainer.classList.add('visible');
 }
 
 function showError(msg) {
@@ -59,11 +72,7 @@ btnCopy.addEventListener('click', async () => {
     document.execCommand('copy');
   }
 
-  const originalText = btnCopy.textContent;
-  btnCopy.textContent = 'Copied!';
-  setTimeout(() => {
-    btnCopy.textContent = originalText;
-  }, 1500);
+  setButtonSuccess(btnCopy, 'Copied!');
 });
 
 btnInsert.addEventListener('click', async () => {
@@ -84,11 +93,7 @@ btnInsert.addEventListener('click', async () => {
 
     await messenger.compose.setComposeDetails(tabId, bodyDetails);
 
-    const originalText = btnInsert.textContent;
-    btnInsert.textContent = 'Inserted!';
-    setTimeout(() => {
-      btnInsert.textContent = originalText;
-    }, 1500);
+    setButtonSuccess(btnInsert, 'Inserted!');
   } catch (err) {
     showError(`Could not insert result: ${err.message}`);
     console.error(err);

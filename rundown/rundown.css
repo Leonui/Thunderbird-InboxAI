@@ -1,0 +1,97 @@
+body {
+  padding: 24px;
+}
+
+.rundown-shell {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.rundown-header {
+  margin-bottom: 18px;
+}
+
+.rundown-header img {
+  width: 34px;
+  height: 34px;
+}
+
+.rundown-header h1 {
+  font-size: 24px;
+}
+
+.rundown-content {
+  display: grid;
+  gap: 14px;
+}
+
+#status {
+  max-width: 520px;
+}
+
+#report {
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius);
+  background: var(--inboxai-surface);
+  box-shadow: var(--inboxai-shadow);
+  padding: 22px;
+}
+
+#report:empty {
+  display: none;
+}
+
+#report h2,
+#report h3 {
+  border-bottom: 1px solid #e5e9f0;
+  color: var(--inboxai-text);
+  line-height: 1.25;
+  padding-bottom: 7px;
+}
+
+#report h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+}
+
+#report h3 {
+  margin: 22px 0 10px;
+  font-size: 16px;
+}
+
+#report h3:first-child {
+  margin-top: 0;
+}
+
+#report ul {
+  margin: 8px 0 14px;
+  padding-left: 20px;
+}
+
+#report li {
+  margin-bottom: 7px;
+}
+
+#report p {
+  margin: 10px 0;
+}
+
+#report strong {
+  color: #0b1220;
+  font-weight: 700;
+}
+
+#report .error {
+  display: block;
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+  }
+
+  #report {
+    padding: 16px;
+  }
+}

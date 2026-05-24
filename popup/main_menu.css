@@ -1,0 +1,39 @@
+body {
+  width: 236px;
+  padding: 12px;
+  background: var(--inboxai-surface);
+}
+
+.menu {
+  display: grid;
+  gap: 12px;
+}
+
+.app-header img {
+  width: 26px;
+  height: 26px;
+}
+
+.menu-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.menu-action {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.menu-action::after {
+  color: currentColor;
+  content: ">";
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.7;
+}
