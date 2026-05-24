@@ -26,9 +26,13 @@ jobs:
 
       - name: Build XPI Package
         run: |
-          # Create the .xpi file (zipping the contents)
-          zip -r inbox-ai.xpi . -x "*.git*" -x "*.github*" -x "*.DS_Store*" -x ".gitignore" -x "*.sh"
+          scripts/build_xpi.sh inbox-ai.xpi
           echo "XPI package created: inbox-ai.xpi"
+
+      - name: Extract Release Notes
+        run: |
+          TAG="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+          node scripts/extract_release_notes.js "$TAG" CHANGELOG.md RELEASE_NOTES.md
 
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v3
@@ -38,6 +42,6 @@ jobs:
           files: inbox-ai.xpi
           draft: false
           prerelease: false
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
