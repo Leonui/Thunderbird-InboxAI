@@ -73,11 +73,26 @@
         </div>
       </section>
 
+      <section class="settings-section" aria-labelledby="jev-section">
+        <h2 id="jev-section">JEV Rundown Assistance</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="jev-api-key">JEV API Key</label>
+            <input type="password" id="jev-api-key" name="jevApiKey" placeholder="TypeSafe API key">
+          </div>
+
+          <label class="checkbox-row" for="use-jev-for-rundown">
+            <input type="checkbox" id="use-jev-for-rundown" name="useJevForRundown">
+            <span>Use JEV judgments to assist Daily Rundown categorization and prioritization.</span>
+          </label>
+        </div>
+      </section>
+
       <section class="settings-section privacy-section" aria-labelledby="privacy-section">
         <h2 id="privacy-section">Privacy &amp; Data</h2>
         <label class="checkbox-row" for="data-opt-in">
           <input type="checkbox" id="data-opt-in" name="dataOptIn">
-          <span>Allow InboxAI to send email content to the configured AI provider.</span>
+          <span>Allow InboxAI to send email content to the configured AI providers.</span>
         </label>
         <p>
           <strong>Note:</strong> You are responsible for the selection and configuration of the third-party AI provider.
@@ -92,6 +107,7 @@
     </form>
   </main>
   <script src="../lib/ai_service.js"></script>
+  <script src="../lib/jev_service.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

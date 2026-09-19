@@ -36,4 +36,22 @@ for (const page of userFacingPages) {
   }
 }
 
+const optionsHtml = fs.readFileSync(path.join(root, 'options/options.html'), 'utf8');
+const optionsScript = fs.readFileSync(path.join(root, 'options/options.js'), 'utf8');
+const rundownHtml = fs.readFileSync(path.join(root, 'rundown/rundown.html'), 'utf8');
+
+assert.match(optionsHtml, /id="jev-api-key"[^>]*type="password"|type="password"[^>]*id="jev-api-key"/);
+assert.match(optionsHtml, /id="use-jev-for-rundown"[^>]*type="checkbox"|type="checkbox"[^>]*id="use-jev-for-rundown"/);
+assert.match(optionsScript, /jevApiKey/);
+assert.match(optionsScript, /useJevForRundown/);
+assert.match(optionsHtml, /<script src="\.\.\/lib\/jev_service\.js"><\/script>/);
+assert.ok(
+  optionsHtml.indexOf('../lib/jev_service.js') < optionsHtml.indexOf('options.js'),
+  'options should load JevService before its controller'
+);
+assert.ok(
+  rundownHtml.indexOf('../lib/jev_service.js') < rundownHtml.indexOf('rundown.js'),
+  'rundown should load JevService before its controller'
+);
+
 console.log('PASS: UI markup regression tests');

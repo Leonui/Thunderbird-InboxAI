@@ -1,6 +1,7 @@
 const statusDiv = document.getElementById('status');
 const reportDiv = document.getElementById('report');
 const aiService = new window.AIService();
+const jevService = new window.JevService();
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_SNIPPET_CHARS = 800;
 const MAX_PAGES = 5;
@@ -17,6 +18,30 @@ function cleanAuthor(author) {
   }
 
   return cleaned || 'Unknown';
+}
+
+function formatProbability(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
+function formatJevAnalysis(analysis) {
+  const categoryLabels = {
+    action_required: 'Action Required',
+    meeting_or_calendar: 'Meeting or Calendar',
+    important_update: 'Important Update',
+    informational: 'Informational',
+    low_priority: 'Low Priority',
+    other_or_unclear: 'Other or Unclear'
+  };
+
+  return [
+    `JEV suggested category: ${categoryLabels[analysis.category] || analysis.category}`,
+    `JEV category confidence: ${formatProbability(analysis.categoryConfidence)}`,
+    `JEV needs-reply probability: ${formatProbability(analysis.needsReplyProbability)}`,
+    `JEV time-sensitive probability: ${formatProbability(analysis.timeSensitiveProbability)}`,
+    `JEV priority score: ${analysis.priorityScore.toFixed(2)} of 2`,
+    `JEV priority confidence: ${formatProbability(analysis.priorityConfidence)}`
+  ];
 }
 
 async function getMessageSnippet(messageId) {
@@ -78,17 +103,39 @@ async function generateRundown() {
       });
     }
 
+    let jevFallbackMessage = '';
+    let jevAnalyses = null;
+
+    setStatus('Checking optional JEV assistance...', 'loading');
+    try {
+      jevAnalyses = await jevService.analyzeRundownEmails(emailRecords);
+      if (jevAnalyses) {
+        for (let index = 0; index < emailRecords.length; index++) {
+          emailRecords[index].jevAnalysis = jevAnalyses[index];
+        }
+      }
+    } catch (err) {
+      console.warn('JEV assistance failed; standard rundown will be used:', err);
+      jevFallbackMessage = 'JEV assistance was unavailable. Standard rundown was used.';
+    }
+
     setStatus(`Analyzing ${topMessages.length} unread emails...`, 'loading');
 
     const emailData = emailRecords.map((message, index) => {
       const snippet = message.snippet || 'No text body was available.';
-      return [
+      const details = [
         `Email ${index + 1}`,
         `Date: ${message.date}`,
         `From: ${message.author}`,
         `Subject: ${message.subject}`,
         `Snippet: ${snippet}`
-      ].join('\n');
+      ];
+
+      if (message.jevAnalysis) {
+        details.push(...formatJevAnalysis(message.jevAnalysis));
+      }
+
+      return details.join('\n');
     }).join('\n\n');
 
     const config = await browser.storage.local.get('rundownLang');
@@ -97,9 +144,16 @@ async function generateRundown() {
         langInstruction = `\n\n**Language Requirement:**\nPlease write the entire summary in **${config.rundownLang}**.\n`;
     }
 
+    const jevInstruction = jevAnalyses ? `
+
+    **JEV Assistance:**
+    Each email includes structured JEV judgments. Use them as auxiliary evidence for categorization and prioritization. They are probabilistic signals, not facts. Prefer the email content when a JEV signal is uncertain or conflicts with the provided text.
+    ` : '';
+
     const prompt = `Here are bounded text snippets from the newest unread emails. Please provide a "Daily Rundown" summary.
     **Instructions:**
     ${langInstruction}
+    ${jevInstruction}
 
     1. **Categorization**: Group emails into relevant categories such as:
       - Urgent/Time-Sensitive
@@ -153,7 +207,7 @@ async function generateRundown() {
 
     const report = await aiService.generate(prompt, "You are a helpful executive assistant specialized in email productivity.");
     
-    setStatus('', '');
+    setStatus(jevFallbackMessage, '');
     
     // safe parsing
     const parser = new DOMParser();

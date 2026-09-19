@@ -5,6 +5,8 @@ const defaultSettings = {
   modelName: 'gpt-4o-mini',
   targetLang: 'English',
   rundownLang: 'English',
+  jevApiKey: '',
+  useJevForRundown: false,
   dataOptIn: false
 };
 
@@ -43,6 +45,8 @@ function restoreOptions() {
     document.querySelector('#model-name').value = res.modelName;
     document.querySelector('#target-lang').value = res.targetLang || 'English';
     document.querySelector('#rundown-lang').value = res.rundownLang || 'English';
+    document.querySelector('#jev-api-key').value = res.jevApiKey || '';
+    document.querySelector('#use-jev-for-rundown').checked = Boolean(res.useJevForRundown);
     document.querySelector('#data-opt-in').checked = res.dataOptIn || false;
   });
 }
@@ -59,6 +63,8 @@ async function testConnection() {
   const baseUrl = document.querySelector('#base-url').value;
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
+  const jevApiKey = document.querySelector('#jev-api-key').value.trim();
+  const useJevForRundown = document.querySelector('#use-jev-for-rundown').checked;
 
   setStatus('Testing connection...', 'loading');
 
@@ -67,10 +73,21 @@ async function testConnection() {
     return;
   }
 
+  if (useJevForRundown && !jevApiKey) {
+    setStatus('Please fill in the JEV API Key.', 'error');
+    return;
+  }
+
   try {
     const service = new window.AIService();
     await service.testConnection(baseUrl, apiKey, modelName);
-    setStatus('Connection successful!', 'success');
+
+    if (useJevForRundown) {
+      const jevService = new window.JevService();
+      await jevService.testConnection(jevApiKey);
+    }
+
+    setStatus(useJevForRundown ? 'Connections successful!' : 'Connection successful!', 'success');
   } catch (err) {
     setStatus(`Error: ${err.message}`, 'error');
   }
@@ -85,6 +102,8 @@ function saveOptions(e) {
   const modelName = document.querySelector('#model-name').value;
   const targetLang = document.querySelector('#target-lang').value;
   const rundownLang = document.querySelector('#rundown-lang').value;
+  const jevApiKey = document.querySelector('#jev-api-key').value.trim();
+  const useJevForRundown = document.querySelector('#use-jev-for-rundown').checked;
   const dataOptIn = document.querySelector('#data-opt-in').checked;
 
   browser.storage.local.set({
@@ -94,6 +113,8 @@ function saveOptions(e) {
     modelName,
     targetLang,
     rundownLang,
+    jevApiKey,
+    useJevForRundown,
     dataOptIn
   }).then(() => {
     setStatus('Options saved.', 'success');
