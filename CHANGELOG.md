@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.9
+
+### Added
+
+- Added optional JEV (TypeSafe System One) assistance for the Daily Rundown, providing per-email category, needs-reply, time-sensitive, and priority judgments as auxiliary signals for the summary prompt.
+- Added a "JEV Rundown Assistance" settings section with a JEV API key field and an opt-in toggle.
+- Added JEV coverage to the settings connection test, which now validates both the AI provider and JEV when assistance is enabled.
+- Added `https://api.typesafe.ai/*` to the host permissions and `lib/jev_service.js` to the packaged extension files.
+- Added tests for the JEV service, the new settings fields, and the updated options markup.
+
+### Changed
+
+- Gated JEV requests behind the API key, the assistance toggle, and the existing data opt-in, so nothing is sent unless all three are set.
+- Made rundown generation fall back to the standard summary with an inline notice when JEV assistance is unavailable.
+- Updated the privacy opt-in wording to cover multiple configured AI providers.
+
 ## v0.1.8
 
 ### Added
