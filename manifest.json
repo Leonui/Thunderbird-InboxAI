@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "InboxAI",
   "description": "InboxAI helps you write, polish, and translate emails, and summarizes your unread mail into a Daily Rundown.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": "InboxAI Developer",
   "browser_specific_settings": {
     "gecko": {
