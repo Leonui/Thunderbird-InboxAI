@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.1.10
+
+### Removed
+
+- Removed the unused `accountsRead` permission. The add-on never reads `MessageHeader.folder` or calls the accounts, folders, or identities APIs, so `messagesRead` alone covers every message call.
+
+### Changed
+
+- Renamed the JEV settings section to "Smart Rundown Prioritization (optional)" and added a plain-language explanation of what JEV is, what it does for the Daily Rundown, and that enabling it sends unread-email excerpts to TypeSafe (api.typesafe.ai).
+- Extended the privacy note to name TypeSafe as a separate data recipient from the configured AI provider.
+- Replaced the `JEV ...` prefixes in the rundown prompt with plain labels, and told the model not to repeat the prioritization hints in its output.
+- Documented the Daily Rundown and Smart Rundown Prioritization in the README, and mentioned the Daily Rundown in the manifest description.
+
+### Added
+
+- Added the Thunderbird `webext-linter` as a submodule under `external/` and `make build`, `make test`, `make lint`, and `make check` targets that run it against the built XPI.
+
 ## v0.1.9
 
 ### Added
