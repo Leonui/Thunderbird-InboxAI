@@ -63,10 +63,19 @@ body {
   background: #fbfcfe;
 }
 
-.privacy-section p {
+.privacy-section p,
+.assist-section p {
   margin: 10px 0 0;
   color: var(--inboxai-muted);
   font-size: 13px;
+}
+
+.assist-section p:first-of-type {
+  margin-top: 0;
+}
+
+.assist-section .form-grid {
+  margin-top: 14px;
 }
 
 .checkbox-row {

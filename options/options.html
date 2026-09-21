@@ -73,11 +73,23 @@
         </div>
       </section>
 
-      <section class="settings-section" aria-labelledby="jev-section">
-        <h2 id="jev-section">JEV Rundown Assistance</h2>
+      <section class="settings-section assist-section" aria-labelledby="jev-section">
+        <h2 id="jev-section">Smart Rundown Prioritization (optional)</h2>
+        <p>
+          The Daily Rundown can optionally use <strong>JEV</strong>, a judgment model from TypeSafe,
+          to rate each unread email for category, whether it likely needs a reply, time sensitivity,
+          and priority. Those ratings are passed to your AI provider as extra hints, so the rundown
+          groups and orders mail more accurately.
+        </p>
+        <p>
+          This is off by default. When enabled, the date, sender, subject and a short body excerpt of
+          each unread email are sent to <strong>api.typesafe.ai</strong>, which is a different company
+          from the AI provider you configured above. Leave it off to keep the Daily Rundown working
+          exactly as before.
+        </p>
         <div class="form-grid">
           <div class="form-group">
-            <label for="jev-api-key">JEV API Key</label>
+            <label for="jev-api-key">JEV API Key (from typesafe.ai)</label>
             <input type="password" id="jev-api-key" name="jevApiKey" placeholder="TypeSafe API key">
           </div>
 
@@ -96,6 +108,7 @@
         </label>
         <p>
           <strong>Note:</strong> You are responsible for the selection and configuration of the third-party AI provider.
+          Enabling Smart Rundown Prioritization additionally sends unread-email excerpts to TypeSafe (api.typesafe.ai).
         </p>
       </section>
 

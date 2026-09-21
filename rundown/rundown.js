@@ -35,12 +35,12 @@ function formatJevAnalysis(analysis) {
   };
 
   return [
-    `JEV suggested category: ${categoryLabels[analysis.category] || analysis.category}`,
-    `JEV category confidence: ${formatProbability(analysis.categoryConfidence)}`,
-    `JEV needs-reply probability: ${formatProbability(analysis.needsReplyProbability)}`,
-    `JEV time-sensitive probability: ${formatProbability(analysis.timeSensitiveProbability)}`,
-    `JEV priority score: ${analysis.priorityScore.toFixed(2)} of 2`,
-    `JEV priority confidence: ${formatProbability(analysis.priorityConfidence)}`
+    `Suggested category: ${categoryLabels[analysis.category] || analysis.category}`,
+    `Category confidence: ${formatProbability(analysis.categoryConfidence)}`,
+    `Needs-reply probability: ${formatProbability(analysis.needsReplyProbability)}`,
+    `Time-sensitive probability: ${formatProbability(analysis.timeSensitiveProbability)}`,
+    `Priority score: ${analysis.priorityScore.toFixed(2)} of 2`,
+    `Priority confidence: ${formatProbability(analysis.priorityConfidence)}`
   ];
 }
 
@@ -106,7 +106,7 @@ async function generateRundown() {
     let jevFallbackMessage = '';
     let jevAnalyses = null;
 
-    setStatus('Checking optional JEV assistance...', 'loading');
+    setStatus('Checking optional prioritization assistance...', 'loading');
     try {
       jevAnalyses = await jevService.analyzeRundownEmails(emailRecords);
       if (jevAnalyses) {
@@ -116,7 +116,7 @@ async function generateRundown() {
       }
     } catch (err) {
       console.warn('JEV assistance failed; standard rundown will be used:', err);
-      jevFallbackMessage = 'JEV assistance was unavailable. Standard rundown was used.';
+      jevFallbackMessage = 'Smart prioritization was unavailable. The standard rundown was used.';
     }
 
     setStatus(`Analyzing ${topMessages.length} unread emails...`, 'loading');
@@ -146,8 +146,8 @@ async function generateRundown() {
 
     const jevInstruction = jevAnalyses ? `
 
-    **JEV Assistance:**
-    Each email includes structured JEV judgments. Use them as auxiliary evidence for categorization and prioritization. They are probabilistic signals, not facts. Prefer the email content when a JEV signal is uncertain or conflicts with the provided text.
+    **Prioritization Hints:**
+    Each email includes structured judgments from an assistive prioritization model. Use them as auxiliary evidence for categorization and prioritization. They are probabilistic signals, not facts. Prefer the email content when a signal is uncertain or conflicts with the provided text. Do not mention these hints or their scores in your output.
     ` : '';
 
     const prompt = `Here are bounded text snippets from the newest unread emails. Please provide a "Daily Rundown" summary.

@@ -4,7 +4,7 @@
 # This script packages the extension source code into an .xpi file for installation/submission.
 
 # Output filename
-OUTPUT_FILE="thunderbird-ai-plugin.xpi"
+OUTPUT_FILE="InboxAI.xpi"
 
 echo "Building $OUTPUT_FILE..."
 

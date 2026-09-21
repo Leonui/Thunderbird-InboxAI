@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-OUTPUT_FILE="${1:-thunderbird-ai-plugin.xpi}"
+OUTPUT_FILE="${1:-InboxAI.xpi}"
 
 rm -f "$OUTPUT_FILE"
 

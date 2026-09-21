@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-XPI_FILE="$ROOT_DIR/thunderbird-ai-plugin.xpi"
+XPI_FILE="$ROOT_DIR/InboxAI.xpi"
 
 cleanup() {
   rm -f "$XPI_FILE"
@@ -20,7 +20,7 @@ fail() {
   ./build.sh >/dev/null
 )
 
-[[ -f "$XPI_FILE" ]] || fail "build did not create thunderbird-ai-plugin.xpi"
+[[ -f "$XPI_FILE" ]] || fail "build did not create InboxAI.xpi"
 
 entries="$(zipinfo -1 "$XPI_FILE")"
 
