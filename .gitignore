@@ -1,0 +1,6 @@
+.stamps/
+.linter-cache/
+*.xpi
+*.xpi.extracted*/
+RELEASE_NOTES.md
+node_modules/

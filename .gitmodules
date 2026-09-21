@@ -1,0 +1,3 @@
+[submodule "external/webext-linter"]
+	path = external/webext-linter
+	url = https://github.com/thunderbird/webext-linter
