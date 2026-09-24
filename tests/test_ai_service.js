@@ -147,8 +147,103 @@ async function testMissingOptInOpensOptionsAndDoesNotFetch() {
   assert.strictEqual(getOpenOptionsCount(), 1);
 }
 
+async function testProviderErrorShowsMessageNotJsonEnvelope() {
+  const { service } = createService({
+    storageConfig: {
+      baseUrl: 'https://api.example.com/v1',
+      apiKey: 'secret',
+      modelName: 'model',
+      dataOptIn: true
+    },
+    fetchImpl: async () => ({
+      ok: false,
+      status: 401,
+      text: async () => JSON.stringify({ error: { message: 'Incorrect API key provided', type: 'invalid_request_error' } })
+    })
+  });
+
+  await assert.rejects(
+    () => service.generate('hello'),
+    (err) => {
+      assert.strictEqual(err.message, 'Authentication failed. Please check your API Key in settings. Details: Incorrect API key provided');
+      assert.strictEqual(err.status, 401);
+      return true;
+    }
+  );
+}
+
+async function testConnectionRetriesWithMaxCompletionTokens() {
+  const bodies = [];
+  const { service } = createService({
+    storageConfig: {},
+    fetchImpl: async (url, options) => {
+      const body = JSON.parse(options.body);
+      bodies.push(body);
+      if ('max_tokens' in body) {
+        return {
+          ok: false,
+          status: 400,
+          text: async () => JSON.stringify({ error: { message: "Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead." } })
+        };
+      }
+      return okJson({ choices: [{ message: { content: 'ok' } }] });
+    }
+  });
+
+  assert.strictEqual(await service.testConnection('https://api.example.com/v1', 'secret', 'gpt-5-mini'), true);
+  assert.strictEqual(bodies.length, 2);
+  assert.strictEqual(bodies[0].max_tokens, 5);
+  assert.strictEqual(bodies[1].max_completion_tokens, 5);
+  assert.strictEqual('max_tokens' in bodies[1], false);
+}
+
+async function testConnectionDoesNotRetryOtherBadRequests() {
+  let fetchCount = 0;
+  const { service } = createService({
+    storageConfig: {},
+    fetchImpl: async () => {
+      fetchCount += 1;
+      return {
+        ok: false,
+        status: 400,
+        text: async () => JSON.stringify({ error: { message: 'model not found' } })
+      };
+    }
+  });
+
+  await assert.rejects(
+    () => service.testConnection('https://api.example.com/v1', 'secret', 'nope'),
+    /model not found/
+  );
+  assert.strictEqual(fetchCount, 1);
+}
+
+async function testGenerateHonoursTimeoutOverride() {
+  let receivedSignal = null;
+  const { service } = createService({
+    storageConfig: {
+      baseUrl: 'https://api.example.com/v1',
+      apiKey: 'secret',
+      modelName: 'model',
+      dataOptIn: true
+    },
+    fetchImpl: async (url, options) => {
+      receivedSignal = options.signal;
+      return okJson({ choices: [{ message: { content: 'ok' } }] });
+    }
+  });
+
+  await service.generate('hello', 'system', { timeoutMs: 120000 });
+  assert.ok(receivedSignal, 'request should carry an abort signal');
+  assert.strictEqual(receivedSignal.aborted, false);
+}
+
 async function run() {
   await testReloadsSettingsForEachRequest();
+  await testProviderErrorShowsMessageNotJsonEnvelope();
+  await testConnectionRetriesWithMaxCompletionTokens();
+  await testConnectionDoesNotRetryOtherBadRequests();
+  await testGenerateHonoursTimeoutOverride();
   await testMalformedProviderResponseHasHelpfulError();
   await testProviderErrorsDoNotDumpLargeBodies();
   await testMissingOptInOpensOptionsAndDoesNotFetch();

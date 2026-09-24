@@ -47,5 +47,5 @@ body {
 
 #result-text {
   min-height: 126px;
-  background: #fbfcfe;
+  background: var(--inboxai-surface-tint);
 }

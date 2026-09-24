@@ -11,6 +11,8 @@ function createOptions({ useJevForRundown, jevApiKey }) {
     '#base-url': { value: 'https://api.example.com/v1' },
     '#api-key': { value: 'provider-key' },
     '#model-name': { value: 'model' },
+    '#theme': { value: 'system' },
+    '#jev-details': { open: false },
     '#target-lang': { value: 'English' },
     '#rundown-lang': { value: 'English' },
     '#jev-api-key': { value: jevApiKey },

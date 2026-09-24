@@ -83,8 +83,8 @@ btnInsert.addEventListener('click', async () => {
       ? details.body || ''
       : details.plainTextBody || '';
     const mergeResult = window.InboxAIText.replaceEditableDraft(currentBody, resultText.value, details);
-    if (mergeResult.confidence === 'low') {
-      throw new Error('Could not safely find the quoted reply boundary. Use Copy to Clipboard instead.');
+    if (mergeResult.confidence === 'low' || !mergeResult.changed) {
+      throw new Error('Could not safely replace the draft. Use Copy to Clipboard instead.');
     }
 
     const bodyDetails = details.isPlainText === false

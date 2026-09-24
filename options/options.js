@@ -3,6 +3,7 @@ const defaultSettings = {
   baseUrl: 'https://api.openai.com/v1',
   apiKey: '',
   modelName: 'gpt-4o-mini',
+  theme: 'system',
   targetLang: 'English',
   rundownLang: 'English',
   jevApiKey: '',
@@ -28,6 +29,7 @@ const providers = {
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.querySelector('form').addEventListener('submit', saveOptions);
 document.querySelector('#provider').addEventListener('change', handleProviderChange);
+document.querySelector('#theme').addEventListener('change', handleThemeChange);
 
 document.querySelector('#test-connection').addEventListener('click', testConnection);
 
@@ -43,12 +45,30 @@ function restoreOptions() {
     document.querySelector('#base-url').value = res.baseUrl;
     document.querySelector('#api-key').value = res.apiKey;
     document.querySelector('#model-name').value = res.modelName;
+    document.querySelector('#theme').value = normalizeTheme(res.theme);
     document.querySelector('#target-lang').value = res.targetLang || 'English';
     document.querySelector('#rundown-lang').value = res.rundownLang || 'English';
     document.querySelector('#jev-api-key').value = res.jevApiKey || '';
     document.querySelector('#use-jev-for-rundown').checked = Boolean(res.useJevForRundown);
     document.querySelector('#data-opt-in').checked = res.dataOptIn || false;
+
+    // Show the optional section expanded when the user has already set it up.
+    const jevDetails = document.querySelector('#jev-details');
+    if (jevDetails && (res.jevApiKey || res.useJevForRundown)) {
+      jevDetails.open = true;
+    }
   });
+}
+
+function normalizeTheme(value) {
+  return window.InboxAITheme ? window.InboxAITheme.normalizeTheme(value) : (value || 'system');
+}
+
+// Preview the theme immediately; it is persisted on Save.
+function handleThemeChange(e) {
+  if (window.InboxAITheme) {
+    window.InboxAITheme.applyTheme(e.target.value);
+  }
 }
 
 function handleProviderChange(e) {
@@ -100,6 +120,7 @@ function saveOptions(e) {
   const baseUrl = document.querySelector('#base-url').value;
   const apiKey = document.querySelector('#api-key').value;
   const modelName = document.querySelector('#model-name').value;
+  const theme = normalizeTheme(document.querySelector('#theme').value);
   const targetLang = document.querySelector('#target-lang').value;
   const rundownLang = document.querySelector('#rundown-lang').value;
   const jevApiKey = document.querySelector('#jev-api-key').value.trim();
@@ -111,6 +132,7 @@ function saveOptions(e) {
     baseUrl,
     apiKey,
     modelName,
+    theme,
     targetLang,
     rundownLang,
     jevApiKey,

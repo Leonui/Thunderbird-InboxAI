@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Translation Result</title>
+  <script src="../shared/theme.js"></script>
   <link rel="stylesheet" href="../shared/ui.css">
   <link rel="stylesheet" href="translation_result.css">
 </head>
@@ -16,6 +17,10 @@
 
     <div id="status" class="status loading visible" role="status" aria-live="polite">Translating...</div>
     <section id="result" class="panel" aria-label="Translated text"></section>
+    <div id="result-actions" class="toolbar" hidden>
+      <span class="spacer"></span>
+      <button id="btn-copy" type="button">Copy to Clipboard</button>
+    </div>
   </main>
   <script src="../lib/ai_service.js"></script>
   <script src="translation_result.js"></script>

@@ -26,6 +26,15 @@ for (const page of userFacingPages) {
     /<meta\s+name="viewport"\s+content="width=device-width,\s*initial-scale=1">/,
     `${page} should set a responsive viewport`
   );
+  assert.match(
+    html,
+    /<script\s+src="\.\.\/shared\/theme\.js"><\/script>/,
+    `${page} should load the shared theme script`
+  );
+  assert.ok(
+    html.indexOf('../shared/theme.js') < html.indexOf('../shared/ui.css'),
+    `${page} should apply the theme before styles load`
+  );
   assert.doesNotMatch(html, /<style\b/i, `${page} should not use inline style blocks`);
   assert.doesNotMatch(html, /\sstyle="/i, `${page} should not use inline style attributes`);
   assert.doesNotMatch(html, /class="[^"]*(section-note|field-help)[^"]*"/i, `${page} should avoid helper microcopy`);
@@ -41,6 +50,10 @@ const optionsScript = fs.readFileSync(path.join(root, 'options/options.js'), 'ut
 const rundownHtml = fs.readFileSync(path.join(root, 'rundown/rundown.html'), 'utf8');
 
 assert.match(optionsHtml, /id="jev-api-key"[^>]*type="password"|type="password"[^>]*id="jev-api-key"/);
+assert.match(optionsHtml, /<select id="theme" name="theme">/);
+assert.match(optionsHtml, /<option value="system">/);
+assert.match(optionsHtml, /<details id="jev-details"/);
+assert.match(optionsScript, /theme/);
 assert.match(optionsHtml, /id="use-jev-for-rundown"[^>]*type="checkbox"|type="checkbox"[^>]*id="use-jev-for-rundown"/);
 assert.match(optionsScript, /jevApiKey/);
 assert.match(optionsScript, /useJevForRundown/);

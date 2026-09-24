@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const statusDiv = document.getElementById('status');
   const resultDiv = document.getElementById('result');
+  const actions = document.getElementById('result-actions');
+  const btnCopy = document.getElementById('btn-copy');
   const token = new URLSearchParams(window.location.search).get('token');
   const storageKey = token ? `pendingTranslation:${token}` : '';
 
@@ -34,6 +36,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     setStatus('', '');
     resultDiv.textContent = translatedText;
     resultDiv.classList.add('visible');
+    actions.hidden = false;
+
+    btnCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(translatedText);
+        const originalText = btnCopy.textContent;
+        btnCopy.textContent = 'Copied!';
+        btnCopy.classList.add('is-success');
+        setTimeout(() => {
+          btnCopy.textContent = originalText;
+          btnCopy.classList.remove('is-success');
+        }, 1500);
+      } catch (err) {
+        setStatus('Could not copy to the clipboard.', 'error');
+      }
+    });
 
   } catch (error) {
     setStatus(`Error: ${error.message}`, 'error');

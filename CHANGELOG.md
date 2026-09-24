@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.1.11
+
+### Fixed
+
+- "Insert into Draft" now works in HTML compose mode for new messages. It used to refuse whenever no quoted reply was present, which is every fresh HTML email.
+- Draft insertion keeps the quoted reply and the Thunderbird signature by locating them as DOM nodes instead of matching serialized markup, so it no longer fails when Thunderbird reformats attributes.
+- Plain-text insertion keeps a `-- ` signature instead of overwriting it.
+- Test Connection retries with `max_completion_tokens` when a provider rejects `max_tokens`, so newer OpenAI models no longer fail the check.
+- The Daily Rundown skips unread mail that Thunderbird has marked as junk.
+- Provider error messages show the provider's message text instead of the raw JSON envelope.
+
+### Added
+
+- Copy and Refresh buttons on the Daily Rundown window, plus a line showing how many emails were analyzed and when.
+- A Copy to Clipboard button on the Translation Result window.
+- Dark theme support across every page, following the Thunderbird / OS color scheme.
+- A **Theme** setting (Follow Thunderbird, Light, Dark) in the new General section. Changes preview immediately and apply to every open InboxAI window once saved.
+- A spinner on loading states so long requests do not look frozen.
+
+### Changed
+
+- Renamed the context-menu item from "InboxAI-Translate" to "Translate with InboxAI".
+- The Daily Rundown request now allows 120 seconds instead of 60, and JEV lookups run at most 4 at a time to avoid rate-limit bursts.
+- The popup menu chevron is drawn with CSS instead of a ">" character.
+- Settings page layout: the Language section became General and now holds the Theme picker, the optional Smart Rundown Prioritization section is collapsed until configured, and the Save / Test Connection bar stays visible while scrolling.
+
 ## v0.1.10
 
 ### Removed

@@ -27,3 +27,7 @@ body {
 #result.visible {
   display: block;
 }
+
+#result-actions[hidden] {
+  display: none;
+}

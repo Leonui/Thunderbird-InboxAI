@@ -50,6 +50,10 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.form-grid.three-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .form-group {
   display: grid;
   gap: 6px;
@@ -60,7 +64,7 @@ body {
 }
 
 .privacy-section {
-  background: #fbfcfe;
+  background: var(--inboxai-surface-tint);
 }
 
 .privacy-section p,
@@ -75,6 +79,63 @@ body {
 }
 
 .assist-section .form-grid {
+  margin-top: 14px;
+}
+
+/* Collapsible optional section */
+details.settings-section > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+  margin: -18px;
+  padding: 18px;
+  border-radius: var(--inboxai-radius);
+}
+
+details.settings-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.settings-section > summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  margin: 0 4px 0 2px;
+  border-right: 2px solid var(--inboxai-muted);
+  border-bottom: 2px solid var(--inboxai-muted);
+  transform: rotate(-45deg);
+  transition: transform 120ms ease;
+}
+
+details.settings-section[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+details.settings-section > summary h2 {
+  margin: 0;
+}
+
+details.settings-section > summary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--inboxai-focus);
+}
+
+.section-summary-hint {
+  margin-left: auto;
+  color: var(--inboxai-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+details.settings-section[open] .section-summary-hint {
+  display: none;
+}
+
+details.settings-section > p:first-of-type,
+details.settings-section > .assist-section p:first-of-type {
   margin-top: 14px;
 }
 
@@ -95,11 +156,17 @@ body {
   margin-top: 2px;
 }
 
+/* Keep Save / Test reachable while the page scrolls. */
 .actions {
+  position: sticky;
+  bottom: 0;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-top: 4px;
+  margin: 0 -8px -24px;
+  padding: 12px 8px 24px;
+  background: var(--inboxai-bg);
+  box-shadow: 0 -12px 12px -8px var(--inboxai-bg);
 }
 
 .actions .status {
@@ -113,7 +180,8 @@ body {
     padding: 16px;
   }
 
-  .form-grid.two-column {
+  .form-grid.two-column,
+  .form-grid.three-column {
     grid-template-columns: 1fr;
   }
 

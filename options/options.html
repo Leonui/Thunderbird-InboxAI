@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InboxAI Settings</title>
+  <script src="../shared/theme.js"></script>
   <link rel="stylesheet" href="../shared/ui.css">
   <link rel="stylesheet" href="options.css">
 </head>
@@ -44,9 +45,18 @@
         </div>
       </section>
 
-      <section class="settings-section" aria-labelledby="language-section">
-        <h2 id="language-section">Language</h2>
-        <div class="form-grid two-column">
+      <section class="settings-section" aria-labelledby="general-section">
+        <h2 id="general-section">General</h2>
+        <div class="form-grid three-column">
+          <div class="form-group">
+            <label for="theme">Theme</label>
+            <select id="theme" name="theme">
+              <option value="system">Follow Thunderbird</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label for="target-lang">Target Language</label>
             <select id="target-lang" name="targetLang">
@@ -73,8 +83,11 @@
         </div>
       </section>
 
-      <section class="settings-section assist-section" aria-labelledby="jev-section">
-        <h2 id="jev-section">Smart Rundown Prioritization (optional)</h2>
+      <details id="jev-details" class="settings-section assist-section">
+        <summary class="section-summary">
+          <h2 id="jev-section">Smart Rundown Prioritization (optional)</h2>
+          <span class="section-summary-hint">Off by default</span>
+        </summary>
         <p>
           The Daily Rundown can optionally use <strong>JEV</strong>, a judgment model from TypeSafe,
           to rate each unread email for category, whether it likely needs a reply, time sensitivity,
@@ -98,7 +111,7 @@
             <span>Use JEV judgments to assist Daily Rundown categorization and prioritization.</span>
           </label>
         </div>
-      </section>
+      </details>
 
       <section class="settings-section privacy-section" aria-labelledby="privacy-section">
         <h2 id="privacy-section">Privacy &amp; Data</h2>

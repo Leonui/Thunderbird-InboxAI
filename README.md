@@ -34,7 +34,8 @@ Before using InboxAI, you must configure your AI provider settings:
     - **Custom**: Enter your own Base URL and Model Name.
 4.  Enter your **API Key**.
 5.  Click **Test Connection** to verify your settings.
-6.  Click **Save Settings**.
+6.  Optionally pick a **Theme** (Follow Thunderbird, Light, or Dark) and the translation and rundown languages under **General**.
+7.  Click **Save Settings**.
 
 ## Usage
 
@@ -43,12 +44,12 @@ Before using InboxAI, you must configure your AI provider settings:
 2.  Click the **InboxAI Assistant** button in the toolbar.
 3.  **Write New**: Enter a topic/prompt and click "Write Draft".
 4.  **Polish**: Type your draft in the email body, then click "Polish Draft".
-5.  The result will appear in the popup. Click **Copy to Clipboard** and paste it into your email.
+5.  The result will appear in the popup. Click **Insert into Draft** to replace your draft while keeping any quoted reply and signature, or **Copy to Clipboard** to paste it yourself.
 
 ### Daily Rundown (Toolbar)
 1.  Click the **InboxAI** button in the main Thunderbird toolbar.
 2.  Click **Daily Rundown**.
-3.  InboxAI reads the newest unread emails (up to 20), sends short excerpts to your configured AI provider, and returns a categorized summary highlighting what needs a reply and what is time-sensitive.
+3.  InboxAI reads the newest unread emails (up to 20, skipping mail marked as junk), sends short excerpts to your configured AI provider, and returns a categorized summary highlighting what needs a reply and what is time-sensitive.
 4.  The summary language follows the **Rundown Language** setting.
 
 ### Smart Rundown Prioritization (Optional)
@@ -66,7 +67,7 @@ When all three are set, the date, sender, subject, and a short body excerpt of e
 ### Translating (Context Menu)
 1.  Select text in an email you want to translate.
 2.  Right-click the selection.
-3.  Click **InboxAI-Translate**.
+3.  Click **Translate with InboxAI**.
 4.  The translation will appear in a popup window.
 
 ## Source Code & Build Instructions

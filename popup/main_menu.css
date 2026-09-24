@@ -31,9 +31,13 @@ body {
 }
 
 .menu-action::after {
-  color: currentColor;
-  content: ">";
-  font-size: 15px;
-  font-weight: 700;
-  opacity: 0.7;
+  content: "";
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  opacity: 0.75;
+  transform: rotate(45deg);
 }

@@ -7,7 +7,7 @@ function trimForTranslation(text) {
 
 browser.menus.create({
   id: "ai-translate-selection",
-  title: "InboxAI-Translate",
+  title: "Translate with InboxAI",
   contexts: ["selection"],
   icons: {
     "32": "icons/inboxai.svg"

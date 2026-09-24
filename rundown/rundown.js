@@ -1,10 +1,18 @@
 const statusDiv = document.getElementById('status');
 const reportDiv = document.getElementById('report');
+const toolbar = document.getElementById('report-toolbar');
+const reportMeta = document.getElementById('report-meta');
+const btnCopy = document.getElementById('btn-copy');
+const btnRefresh = document.getElementById('btn-refresh');
 const aiService = new window.AIService();
 const jevService = new window.JevService();
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_SNIPPET_CHARS = 800;
 const MAX_PAGES = 5;
+// Summarizing up to 20 emails is a long prompt; give slow models more room than a single draft.
+const RUNDOWN_TIMEOUT_MS = 120000;
+
+let isGenerating = false;
 
 function setStatus(message, state = 'loading') {
   statusDiv.textContent = message || '';
@@ -56,7 +64,32 @@ async function getMessageSnippet(messageId) {
   }
 }
 
+function setButtonSuccess(button, message) {
+  const originalText = button.textContent;
+  button.textContent = message;
+  button.classList.add('is-success');
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.classList.remove('is-success');
+  }, 1500);
+}
+
+function showToolbar(visible, meta = '') {
+  toolbar.hidden = !visible;
+  reportMeta.textContent = meta;
+}
+
 async function generateRundown() {
+  if (isGenerating) {
+    return;
+  }
+
+  isGenerating = true;
+  btnRefresh.disabled = true;
+  btnCopy.disabled = true;
+  reportDiv.innerHTML = '';
+  showToolbar(false);
+
   try {
     setStatus('Fetching unread emails...', 'loading');
     
@@ -80,8 +113,12 @@ async function generateRundown() {
       }
     }
 
+    // Unread mail in Junk folders is still "unread"; keep spam out of the briefing.
+    msgList = msgList.filter((m) => !m.junk);
+
     if (msgList.length === 0) {
       setStatus('No unread emails found.', 'success');
+      showToolbar(true);
       return;
     }
 
@@ -205,9 +242,13 @@ async function generateRundown() {
     Email snippets:
     ${emailData}`;
 
-    const report = await aiService.generate(prompt, "You are a helpful executive assistant specialized in email productivity.");
-    
-    setStatus(jevFallbackMessage, '');
+    const report = await aiService.generate(
+      prompt,
+      "You are a helpful executive assistant specialized in email productivity.",
+      { timeoutMs: RUNDOWN_TIMEOUT_MS }
+    );
+
+    setStatus(jevFallbackMessage, 'notice');
     
     // safe parsing
     const parser = new DOMParser();
@@ -218,6 +259,9 @@ async function generateRundown() {
         reportDiv.appendChild(doc.body.firstChild);
     }
 
+    const generatedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    showToolbar(true, `${topMessages.length} of ${msgList.length} unread emails · generated ${generatedAt}`);
+
   } catch (err) {
     console.error(err);
     setStatus('', '');
@@ -226,8 +270,32 @@ async function generateRundown() {
     errDiv.className = 'error';
     errDiv.textContent = `Error: ${err.message}`;
     reportDiv.appendChild(errDiv);
+    showToolbar(true);
+  } finally {
+    isGenerating = false;
+    btnRefresh.disabled = false;
+    btnCopy.disabled = !reportDiv.querySelector('h3, ul, p');
   }
 }
+
+btnRefresh.addEventListener('click', () => {
+  generateRundown();
+});
+
+btnCopy.addEventListener('click', async () => {
+  const text = reportDiv.innerText.trim();
+  if (!text) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    setButtonSuccess(btnCopy, 'Copied!');
+  } catch (err) {
+    console.warn('Clipboard write failed:', err);
+    setStatus('Could not copy to the clipboard.', 'error');
+  }
+});
 
 function parseMarkdown(text) {
   // SECURITY: Escape HTML entities FIRST to prevent injection from AI output

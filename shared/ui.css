@@ -1,24 +1,104 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
   --inboxai-accent: #0060df;
   --inboxai-accent-hover: #0250bb;
+  --inboxai-accent-contrast: #ffffff;
   --inboxai-accent-soft: #eaf2ff;
+  --inboxai-accent-soft-border: #b8c7de;
+  --inboxai-accent-soft-text: #174ea6;
   --inboxai-text: #1f2328;
+  --inboxai-text-strong: #0b1220;
   --inboxai-muted: #5b6472;
+  --inboxai-placeholder: #808997;
   --inboxai-border: #c9d0dc;
   --inboxai-border-strong: #a8b1bf;
+  --inboxai-divider: #e5e9f0;
   --inboxai-bg: #f5f7fb;
   --inboxai-surface: #ffffff;
   --inboxai-surface-alt: #f8f9fb;
+  --inboxai-surface-hover: #eef2f7;
+  --inboxai-surface-tint: #fbfcfe;
   --inboxai-success: #0a7d33;
   --inboxai-success-bg: #e8f5ec;
+  --inboxai-success-border: #a9d8b8;
   --inboxai-danger: #c50042;
   --inboxai-danger-bg: #fff0f5;
+  --inboxai-danger-border: #f3b4ca;
   --inboxai-focus: rgba(0, 96, 223, 0.28);
   --inboxai-radius: 7px;
   --inboxai-radius-sm: 5px;
   --inboxai-shadow: 0 8px 24px rgba(31, 35, 40, 0.08);
   --inboxai-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Follow the Thunderbird / OS theme so panels do not glare in a dark UI.
+   The Theme setting (shared/theme.js) can force either scheme via data-theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --inboxai-accent: #4c8dff;
+    --inboxai-accent-hover: #6ea2ff;
+    --inboxai-accent-contrast: #0b1220;
+    --inboxai-accent-soft: #1b2a44;
+    --inboxai-accent-soft-border: #2f4a75;
+    --inboxai-accent-soft-text: #9dc0ff;
+    --inboxai-text: #e6e9ef;
+    --inboxai-text-strong: #ffffff;
+    --inboxai-muted: #9aa4b2;
+    --inboxai-placeholder: #7b8595;
+    --inboxai-border: #3a4150;
+    --inboxai-border-strong: #4d5665;
+    --inboxai-divider: #343b48;
+    --inboxai-bg: #1c1f26;
+    --inboxai-surface: #262a33;
+    --inboxai-surface-alt: #2d323c;
+    --inboxai-surface-hover: #353b47;
+    --inboxai-surface-tint: #2a2f39;
+    --inboxai-success: #6fd08f;
+    --inboxai-success-bg: #1a2e21;
+    --inboxai-success-border: #2f5a3d;
+    --inboxai-danger: #ff7aa2;
+    --inboxai-danger-bg: #3a1a26;
+    --inboxai-danger-border: #6b2a42;
+    --inboxai-focus: rgba(76, 141, 255, 0.4);
+    --inboxai-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --inboxai-accent: #4c8dff;
+  --inboxai-accent-hover: #6ea2ff;
+  --inboxai-accent-contrast: #0b1220;
+  --inboxai-accent-soft: #1b2a44;
+  --inboxai-accent-soft-border: #2f4a75;
+  --inboxai-accent-soft-text: #9dc0ff;
+  --inboxai-text: #e6e9ef;
+  --inboxai-text-strong: #ffffff;
+  --inboxai-muted: #9aa4b2;
+  --inboxai-placeholder: #7b8595;
+  --inboxai-border: #3a4150;
+  --inboxai-border-strong: #4d5665;
+  --inboxai-divider: #343b48;
+  --inboxai-bg: #1c1f26;
+  --inboxai-surface: #262a33;
+  --inboxai-surface-alt: #2d323c;
+  --inboxai-surface-hover: #353b47;
+  --inboxai-surface-tint: #2a2f39;
+  --inboxai-success: #6fd08f;
+  --inboxai-success-bg: #1a2e21;
+  --inboxai-success-border: #2f5a3d;
+  --inboxai-danger: #ff7aa2;
+  --inboxai-danger-bg: #3a1a26;
+  --inboxai-danger-border: #6b2a42;
+  --inboxai-focus: rgba(76, 141, 255, 0.4);
+  --inboxai-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 * {
@@ -60,7 +140,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #eef2f7;
+  background: var(--inboxai-surface-hover);
   border-color: var(--inboxai-border-strong);
 }
 
@@ -81,7 +161,7 @@ button:disabled {
 button.primary {
   border-color: var(--inboxai-accent);
   background: var(--inboxai-accent);
-  color: #ffffff;
+  color: var(--inboxai-accent-contrast);
 }
 
 button.primary:hover:not(:disabled) {
@@ -135,7 +215,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #808997;
+  color: var(--inboxai-placeholder);
 }
 
 .app-header {
@@ -175,14 +255,50 @@ textarea::placeholder {
 
 .status.loading,
 .status.is-loading {
-  border-color: #b8c7de;
+  border-color: var(--inboxai-accent-soft-border);
   background: var(--inboxai-accent-soft);
-  color: #174ea6;
+  color: var(--inboxai-accent-soft-text);
+}
+
+/* A small spinner so a long request does not look frozen. */
+.status.loading::before,
+.status.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: inboxai-spin 0.8s linear infinite;
+}
+
+@keyframes inboxai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status.loading::before,
+  .status.is-loading::before {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.5;
+  }
+}
+
+.status.notice {
+  border-color: var(--inboxai-accent-soft-border);
+  background: var(--inboxai-accent-soft);
+  color: var(--inboxai-accent-soft-text);
 }
 
 .status.success,
 .status.is-success {
-  border-color: #a9d8b8;
+  border-color: var(--inboxai-success-border);
   background: var(--inboxai-success-bg);
   color: var(--inboxai-success);
 }
@@ -190,7 +306,7 @@ textarea::placeholder {
 .status.error,
 .status.is-error,
 .error {
-  border-color: #f3b4ca;
+  border-color: var(--inboxai-danger-border);
   background: var(--inboxai-danger-bg);
   color: var(--inboxai-danger);
 }
@@ -222,6 +338,17 @@ textarea::placeholder {
   border: 1px solid var(--inboxai-border);
   border-radius: var(--inboxai-radius);
   background: var(--inboxai-surface);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar .spacer {
+  flex: 1;
 }
 
 .sr-only {

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Daily Rundown</title>
+  <script src="../shared/theme.js"></script>
   <link rel="stylesheet" href="../shared/ui.css">
   <link rel="stylesheet" href="rundown.css">
 </head>
@@ -14,8 +15,14 @@
       <h1>Daily Email Rundown</h1>
     </header>
 
-    <section class="rundown-content" aria-live="polite">
-      <div id="status" class="status loading visible">Loading unread emails...</div>
+    <section class="rundown-content">
+      <div id="status" class="status loading visible" role="status" aria-live="polite">Loading unread emails...</div>
+      <div id="report-toolbar" class="toolbar report-toolbar" hidden>
+        <span id="report-meta" class="report-meta"></span>
+        <span class="spacer"></span>
+        <button id="btn-copy" type="button">Copy</button>
+        <button id="btn-refresh" type="button" class="secondary">Refresh</button>
+      </div>
       <article id="report"></article>
     </section>
   </main>
