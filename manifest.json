@@ -19,6 +19,7 @@
   "permissions": [
     "storage",
     "messagesRead",
+    "accountsRead",
     "https://api.typesafe.ai/*",
     "compose",
     "menus"

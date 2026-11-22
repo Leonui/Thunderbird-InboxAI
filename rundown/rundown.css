@@ -20,6 +20,27 @@ body {
   font-size: 24px;
 }
 
+.rundown-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--inboxai-border);
+  border-radius: var(--inboxai-radius);
+  background: var(--inboxai-surface);
+  box-shadow: var(--inboxai-shadow);
+}
+
+.rundown-filter {
+  flex: 1;
+  min-width: 0;
+}
+
+.rundown-filter label {
+  margin-bottom: 5px;
+}
+
 .rundown-content {
   display: grid;
   gap: 14px;
@@ -89,6 +110,11 @@ body {
 @media (max-width: 640px) {
   body {
     padding: 16px;
+  }
+
+  .rundown-toolbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   #report {

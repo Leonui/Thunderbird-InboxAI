@@ -48,8 +48,9 @@ Before using InboxAI, you must configure your AI provider settings:
 ### Daily Rundown (Toolbar)
 1.  Click the **InboxAI** button in the main Thunderbird toolbar.
 2.  Click **Daily Rundown**.
-3.  InboxAI reads the newest unread emails (up to 20), sends short excerpts to your configured AI provider, and returns a categorized summary highlighting what needs a reply and what is time-sensitive.
-4.  The summary language follows the **Rundown Language** setting.
+3.  InboxAI queries unread emails per selected mail account (up to 20 balanced across accounts so one high-volume inbox does not crowd out others), sends short excerpts to your configured AI provider, and returns a categorized summary with account labels highlighting what needs a reply and what is time-sensitive.
+4.  Use the **Account** filter dropdown at the top of the Daily Rundown window to switch between all selected accounts or any individual mail account, or configure which accounts are included by default under **Daily Rundown Accounts** in Settings.
+5.  The summary language follows the **Rundown Language** setting.
 
 ### Smart Rundown Prioritization (Optional)
 

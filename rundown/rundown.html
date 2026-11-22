@@ -14,6 +14,16 @@
       <h1>Daily Email Rundown</h1>
     </header>
 
+    <section class="rundown-toolbar" aria-label="Account selection">
+      <div class="rundown-filter">
+        <label for="account-filter">Account</label>
+        <select id="account-filter" name="accountFilter">
+          <option value="all">All Selected Accounts</option>
+        </select>
+      </div>
+      <button type="button" id="refresh-rundown" class="secondary">Refresh</button>
+    </section>
+
     <section class="rundown-content" aria-live="polite">
       <div id="status" class="status loading visible">Loading unread emails...</div>
       <article id="report"></article>
@@ -23,6 +33,7 @@
   <script src="../lib/ai_service.js"></script>
   <script src="../lib/jev_service.js"></script>
   <script src="../lib/message_text.js"></script>
+  <script src="../lib/account_service.js"></script>
   <script src="rundown.js"></script>
 </body>
 </html>
