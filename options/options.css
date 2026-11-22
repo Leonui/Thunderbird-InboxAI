@@ -64,18 +64,32 @@ body {
 }
 
 .privacy-section p,
-.assist-section p {
+.assist-section p,
+.accounts-section p {
   margin: 10px 0 0;
   color: var(--inboxai-muted);
   font-size: 13px;
 }
 
-.assist-section p:first-of-type {
+.assist-section p:first-of-type,
+.accounts-section p:first-of-type {
   margin-top: 0;
 }
 
-.assist-section .form-grid {
+.assist-section .form-grid,
+.accounts-list {
   margin-top: 14px;
+}
+
+.accounts-list {
+  display: grid;
+  gap: 10px;
+}
+
+.accounts-empty {
+  margin: 0;
+  color: var(--inboxai-muted);
+  font-size: 13px;
 }
 
 .checkbox-row {

@@ -42,16 +42,29 @@ const rundownHtml = fs.readFileSync(path.join(root, 'rundown/rundown.html'), 'ut
 
 assert.match(optionsHtml, /id="jev-api-key"[^>]*type="password"|type="password"[^>]*id="jev-api-key"/);
 assert.match(optionsHtml, /id="use-jev-for-rundown"[^>]*type="checkbox"|type="checkbox"[^>]*id="use-jev-for-rundown"/);
+assert.match(optionsHtml, /id="rundown-accounts-list"/);
 assert.match(optionsScript, /jevApiKey/);
 assert.match(optionsScript, /useJevForRundown/);
+assert.match(optionsScript, /rundownAccountIds/);
 assert.match(optionsHtml, /<script src="\.\.\/lib\/jev_service\.js"><\/script>/);
+assert.match(optionsHtml, /<script src="\.\.\/lib\/account_service\.js"><\/script>/);
+assert.match(rundownHtml, /id="account-filter"/);
+assert.match(rundownHtml, /<script src="\.\.\/lib\/account_service\.js"><\/script>/);
 assert.ok(
   optionsHtml.indexOf('../lib/jev_service.js') < optionsHtml.indexOf('options.js'),
   'options should load JevService before its controller'
 );
 assert.ok(
+  optionsHtml.indexOf('../lib/account_service.js') < optionsHtml.indexOf('options.js'),
+  'options should load AccountService before its controller'
+);
+assert.ok(
   rundownHtml.indexOf('../lib/jev_service.js') < rundownHtml.indexOf('rundown.js'),
   'rundown should load JevService before its controller'
+);
+assert.ok(
+  rundownHtml.indexOf('../lib/account_service.js') < rundownHtml.indexOf('rundown.js'),
+  'rundown should load AccountService before its controller'
 );
 
 console.log('PASS: UI markup regression tests');

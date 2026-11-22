@@ -73,6 +73,14 @@
         </div>
       </section>
 
+      <section class="settings-section accounts-section" aria-labelledby="accounts-section">
+        <h2 id="accounts-section">Daily Rundown Accounts</h2>
+        <p>
+          Select which mail accounts to include in the Daily Rundown. Unread emails are fetched per account so a high-volume inbox does not crowd out your other accounts.
+        </p>
+        <div id="rundown-accounts-list" class="accounts-list" role="group" aria-labelledby="accounts-section"></div>
+      </section>
+
       <section class="settings-section assist-section" aria-labelledby="jev-section">
         <h2 id="jev-section">Smart Rundown Prioritization (optional)</h2>
         <p>
@@ -121,6 +129,7 @@
   </main>
   <script src="../lib/ai_service.js"></script>
   <script src="../lib/jev_service.js"></script>
+  <script src="../lib/account_service.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

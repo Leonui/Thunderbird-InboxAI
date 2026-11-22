@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-function createOptions({ useJevForRundown, jevApiKey }) {
+function createOptions({ useJevForRundown, jevApiKey, accountCheckboxes = null }) {
   const values = {
     '#provider': { value: 'openai' },
     '#base-url': { value: 'https://api.example.com/v1' },
@@ -21,11 +21,17 @@ function createOptions({ useJevForRundown, jevApiKey }) {
     'form': {}
   };
 
+  if (accountCheckboxes) {
+    values['#rundown-accounts-list'] = {
+      querySelectorAll: () => accountCheckboxes
+    };
+  }
+
   for (const element of Object.values(values)) {
     element.addEventListener = () => {};
   }
 
-  const calls = { provider: 0, jev: 0 };
+  const calls = { provider: 0, jev: 0, saved: null };
   const sandbox = {
     window: {
       AIService: class {
@@ -48,7 +54,9 @@ function createOptions({ useJevForRundown, jevApiKey }) {
       storage: {
         local: {
           get: async () => ({}),
-          set: async () => {}
+          set: async (payload) => {
+            calls.saved = payload;
+          }
         }
       }
     },
@@ -61,6 +69,7 @@ function createOptions({ useJevForRundown, jevApiKey }) {
 
   return {
     testConnection: sandbox.testConnection,
+    saveOptions: sandbox.saveOptions,
     calls,
     status: values['#status']
   };
@@ -94,10 +103,42 @@ async function testCheckedJevRequiresAKeyBeforeRequests() {
   assert.match(options.status.textContent, /JEV API Key/);
 }
 
+async function testSaveOptionsStoresSelectedAccountsAndRejectsEmptySelection() {
+  const options = createOptions({
+    useJevForRundown: false,
+    jevApiKey: '',
+    accountCheckboxes: [
+      { value: 'acc1', checked: true },
+      { value: 'acc2', checked: false },
+      { value: 'acc3', checked: true }
+    ]
+  });
+
+  await options.saveOptions({ preventDefault: () => {} });
+  assert.deepStrictEqual(
+    JSON.parse(JSON.stringify(options.calls.saved.rundownAccountIds)),
+    ['acc1', 'acc3']
+  );
+
+  const emptyOptions = createOptions({
+    useJevForRundown: false,
+    jevApiKey: '',
+    accountCheckboxes: [
+      { value: 'acc1', checked: false },
+      { value: 'acc2', checked: false }
+    ]
+  });
+
+  await emptyOptions.saveOptions({ preventDefault: () => {} });
+  assert.strictEqual(emptyOptions.calls.saved, null);
+  assert.match(emptyOptions.status.textContent, /select at least one account/i);
+}
+
 async function run() {
   await testJevIsSkippedWhenUnchecked();
   await testJevIsTestedWhenChecked();
   await testCheckedJevRequiresAKeyBeforeRequests();
+  await testSaveOptionsStoresSelectedAccountsAndRejectsEmptySelection();
   console.log('PASS: options connection tests');
 }
 

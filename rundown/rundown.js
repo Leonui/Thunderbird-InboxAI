@@ -1,5 +1,7 @@
 const statusDiv = document.getElementById('status');
 const reportDiv = document.getElementById('report');
+const accountFilterSelect = document.getElementById('account-filter');
+const refreshButton = document.getElementById('refresh-rundown');
 const aiService = new window.AIService();
 const jevService = new window.JevService();
 const MAX_MESSAGES = 20;
@@ -9,6 +11,15 @@ const MAX_PAGES = 5;
 function setStatus(message, state = 'loading') {
   statusDiv.textContent = message || '';
   statusDiv.className = message ? `status ${state} visible` : 'status';
+}
+
+function setControlsDisabled(disabled) {
+  if (accountFilterSelect) {
+    accountFilterSelect.disabled = disabled;
+  }
+  if (refreshButton) {
+    refreshButton.disabled = disabled;
+  }
 }
 
 function cleanAuthor(author) {
@@ -44,9 +55,44 @@ function formatJevAnalysis(analysis) {
   ];
 }
 
+function populateAccountFilter(accounts, configuredAccountIds, selectedAccountId) {
+  if (!accountFilterSelect || typeof document.createElement !== 'function') {
+    return;
+  }
+
+  const list = Array.isArray(accounts) ? accounts : [];
+  const enabledAccounts = window.InboxAIAccounts
+    ? window.InboxAIAccounts.resolveEnabledAccounts(list, configuredAccountIds)
+    : list;
+
+  accountFilterSelect.innerHTML = '';
+
+  const allOption = document.createElement('option');
+  allOption.value = 'all';
+  if (enabledAccounts.length > 0 && enabledAccounts.length < list.length) {
+    allOption.textContent = `All Selected Accounts (${enabledAccounts.length})`;
+  } else if (list.length > 1) {
+    allOption.textContent = `All Accounts (${list.length})`;
+  } else {
+    allOption.textContent = 'All Selected Accounts';
+  }
+  accountFilterSelect.appendChild(allOption);
+
+  for (const account of list) {
+    const option = document.createElement('option');
+    option.value = account.id;
+    option.textContent = account.name;
+    accountFilterSelect.appendChild(option);
+  }
+
+  const hasSelectedAccount = list.some((acc) => String(acc.id) === String(selectedAccountId));
+  accountFilterSelect.value = hasSelectedAccount ? String(selectedAccountId) : 'all';
+}
+
 async function getMessageSnippet(messageId) {
   try {
-    const fullMessage = await messenger.messages.getFull(messageId);
+    const mailApi = typeof messenger !== 'undefined' ? messenger : browser;
+    const fullMessage = await mailApi.messages.getFull(messageId);
     const body = window.InboxAIText.extractTextFromFullMessage(fullMessage);
     const payload = window.InboxAIText.truncateText(body, MAX_MESSAGE_SNIPPET_CHARS, { collapseWhitespace: true });
     return payload.text + (payload.truncated ? '...' : '');
@@ -57,38 +103,44 @@ async function getMessageSnippet(messageId) {
 }
 
 async function generateRundown() {
+  setControlsDisabled(true);
   try {
     setStatus('Fetching unread emails...', 'loading');
-    
-    const messages = await messenger.messages.query({ unread: true });
-    
-    let msgList = [];
-    let page = messages;
-    let pageCount = 0;
+    reportDiv.innerHTML = '';
 
-    while (page) {
-      if (page.messages) {
-        for (let m of page.messages) {
-          msgList.push(m);
-        }
-      }
-      pageCount++;
-      if (page.id && pageCount < MAX_PAGES) {
-        page = await messenger.messages.continueList(page.id);
-      } else {
-        break;
-      }
-    }
+    const config = await browser.storage.local.get(['rundownLang', 'rundownAccountIds']);
+    const configuredAccountIds = Array.isArray(config.rundownAccountIds) ? config.rundownAccountIds : [];
+    const selectedAccountId = accountFilterSelect && accountFilterSelect.value
+      ? accountFilterSelect.value
+      : 'all';
 
-    if (msgList.length === 0) {
+    const accounts = window.InboxAIAccounts
+      ? await window.InboxAIAccounts.listAccounts()
+      : [];
+
+    populateAccountFilter(accounts, configuredAccountIds, selectedAccountId);
+
+    const effectiveSelection = accountFilterSelect && accountFilterSelect.value
+      ? accountFilterSelect.value
+      : selectedAccountId;
+
+    const {
+      topMessages,
+      totalUnreadCount,
+      accountsWithUnread
+    } = await window.InboxAIAccounts.collectUnreadMessages({
+      accounts,
+      configuredAccountIds,
+      selectedAccountId: effectiveSelection,
+      maxMessages: MAX_MESSAGES,
+      maxPagesPerAccount: MAX_PAGES
+    });
+
+    if (topMessages.length === 0) {
       setStatus('No unread emails found.', 'success');
       return;
     }
 
-    msgList.sort((a, b) => b.date - a.date);
-
-    const topMessages = msgList.slice(0, MAX_MESSAGES);
-    
     setStatus(`Reading ${topMessages.length} unread emails...`, 'loading');
 
     const emailRecords = [];
@@ -96,6 +148,7 @@ async function generateRundown() {
       setStatus(`Reading ${index + 1} of ${topMessages.length} unread emails...`, 'loading');
       const snippet = await getMessageSnippet(message.id);
       emailRecords.push({
+        accountName: message.accountName || '',
         date: new Date(message.date).toLocaleDateString(),
         author: cleanAuthor(message.author),
         subject: message.subject || '(no subject)',
@@ -124,12 +177,19 @@ async function generateRundown() {
     const emailData = emailRecords.map((message, index) => {
       const snippet = message.snippet || 'No text body was available.';
       const details = [
-        `Email ${index + 1}`,
+        `Email ${index + 1}`
+      ];
+
+      if (message.accountName) {
+        details.push(`Account: ${message.accountName}`);
+      }
+
+      details.push(
         `Date: ${message.date}`,
         `From: ${message.author}`,
         `Subject: ${message.subject}`,
         `Snippet: ${snippet}`
-      ];
+      );
 
       if (message.jevAnalysis) {
         details.push(...formatJevAnalysis(message.jevAnalysis));
@@ -138,10 +198,9 @@ async function generateRundown() {
       return details.join('\n');
     }).join('\n\n');
 
-    const config = await browser.storage.local.get('rundownLang');
     let langInstruction = '';
     if (config.rundownLang) {
-        langInstruction = `\n\n**Language Requirement:**\nPlease write the entire summary in **${config.rundownLang}**.\n`;
+      langInstruction = `\n\n**Language Requirement:**\nPlease write the entire summary in **${config.rundownLang}**.\n`;
     }
 
     const jevInstruction = jevAnalyses ? `
@@ -149,6 +208,10 @@ async function generateRundown() {
     **Prioritization Hints:**
     Each email includes structured judgments from an assistive prioritization model. Use them as auxiliary evidence for categorization and prioritization. They are probabilistic signals, not facts. Prefer the email content when a signal is uncertain or conflicts with the provided text. Do not mention these hints or their scores in your output.
     ` : '';
+
+    const accountsSummaryLine = accountsWithUnread.length > 0
+      ? `\n    Accounts with unread mail: ${accountsWithUnread.map((acc) => `${acc.name} (${acc.unreadCount} unread)`).join(', ')}`
+      : '';
 
     const prompt = `Here are bounded text snippets from the newest unread emails. Please provide a "Daily Rundown" summary.
     **Instructions:**
@@ -166,7 +229,8 @@ async function generateRundown() {
     2. **Formatting Requirements**:
       - Use "###" for section headers (maximum 3 hierarchy levels)
       - Use "- " for list items
-      - Use **bold** for key senders, urgent items, and critical information
+      - Use **bold** for key senders, account names, urgent items, and critical information
+      - When an email includes an "Account:" field, show the account name next to the sender, for example: **[Sender Name] ([Account Name])**
       - Keep summaries concise (1-2 sentences per email)
 
     3. **Content Guidelines**:
@@ -178,14 +242,14 @@ async function generateRundown() {
 
     4. **Output Structure**:
     ### Overview
-    - Summarize the unread scope and the most important themes.
+    - Summarize the unread scope across accounts and the most important themes.
 
     ### Needs Reply
-    - **[Sender Name]**: [Brief reason this likely needs a response]
+    - **[Sender Name] ([Account Name])**: [Brief reason this likely needs a response]
 
     ### [Category Name]
-    - **[Sender Name]**: [Brief summary of email content]
-    - **[Sender Name]**: [Brief summary with deadline/action if applicable]
+    - **[Sender Name] ([Account Name])**: [Brief summary of email content]
+    - **[Sender Name] ([Account Name])**: [Brief summary with deadline/action if applicable]
 
     ### [Next Category]
     ...
@@ -200,7 +264,7 @@ async function generateRundown() {
         
     
     Unread email count analyzed: ${topMessages.length}
-    Total unread returned by Thunderbird: ${msgList.length}
+    Total unread returned by Thunderbird: ${totalUnreadCount}${accountsSummaryLine}
 
     Email snippets:
     ${emailData}`;
@@ -215,7 +279,7 @@ async function generateRundown() {
     reportDiv.innerHTML = '';
     // Append children safely
     while (doc.body.firstChild) {
-        reportDiv.appendChild(doc.body.firstChild);
+      reportDiv.appendChild(doc.body.firstChild);
     }
 
   } catch (err) {
@@ -226,6 +290,8 @@ async function generateRundown() {
     errDiv.className = 'error';
     errDiv.textContent = `Error: ${err.message}`;
     reportDiv.appendChild(errDiv);
+  } finally {
+    setControlsDisabled(false);
   }
 }
 
@@ -255,6 +321,18 @@ function parseMarkdown(text) {
     if (line.trim() === '') return '';
     return `<p>${line}</p>`;
   }).join('');
+}
+
+if (accountFilterSelect) {
+  accountFilterSelect.addEventListener('change', () => {
+    generateRundown();
+  });
+}
+
+if (refreshButton) {
+  refreshButton.addEventListener('click', () => {
+    generateRundown();
+  });
 }
 
 // Start immediately
